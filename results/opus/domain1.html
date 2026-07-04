@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第1章 セキュアなアーキテクチャの設計 | SAA-C03 学習テキスト</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --fg:#1f2933; --muted:#52616b; --card:#ffffff;
+    --border:#dfe3e8; --accent:#ec7211; --accent-dark:#d35400;
+    --blue:#146eb4; --blue-dark:#0f5a94; --code-bg:#eef1f4;
+    --exam:#fff4e6; --exam-border:#f0a94c; --note:#e8f2fb; --note-border:#7fb3e0;
+    --warn:#fdecea; --warn-border:#e6a4a0; --src:#eef6ee; --src-border:#9fc79f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1419; --fg:#e5e9ec; --muted:#a3b1bb; --card:#1a222b;
+      --border:#2c3742; --accent:#ff9d4d; --accent-dark:#ffb066;
+      --blue:#5aa9e6; --blue-dark:#8cc4f0; --code-bg:#20293200;
+      --exam:#2a2114; --exam-border:#9c6b23; --note:#12242f; --note-border:#2f5f80;
+      --warn:#2c1917; --warn-border:#7a3d38; --src:#16241a; --src-border:#3c6b40;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.85;font-size:16px;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+  header.top{
+    background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+    color:#fff;padding:34px 20px;margin-bottom:8px;
+  }
+  header.top .inner{max-width:900px;margin:0 auto}
+  header.top .kicker{font-size:.8rem;letter-spacing:.14em;opacity:.85;margin:0 0 6px}
+  header.top h1{margin:0;font-size:1.7rem;line-height:1.4}
+  header.top p{margin:10px 0 0;opacity:.92;font-size:.95rem}
+  nav.chapnav{
+    position:sticky;top:0;z-index:10;background:var(--card);
+    border-bottom:1px solid var(--border);padding:10px 20px;
+    display:flex;gap:14px;flex-wrap:wrap;font-size:.88rem;
+  }
+  nav.chapnav a{color:var(--blue);text-decoration:none;font-weight:600}
+  nav.chapnav a:hover{text-decoration:underline}
+  nav.chapnav .sp{color:var(--muted)}
+  .toc{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:18px 22px;margin:26px 0;
+  }
+  .toc h2{margin:0 0 10px;font-size:1rem;color:var(--muted)}
+  .toc ol{margin:0;padding-left:1.3em}
+  .toc a{color:var(--blue);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  section{margin:44px 0}
+  h2.sec{
+    font-size:1.42rem;border-left:6px solid var(--accent);
+    padding:4px 0 4px 14px;margin:0 0 8px;line-height:1.4;scroll-margin-top:60px;
+  }
+  h2.sec .ts{display:block;font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.04em;margin-bottom:4px}
+  h3{font-size:1.12rem;margin:30px 0 8px;color:var(--fg);border-bottom:1px solid var(--border);padding-bottom:5px}
+  h4{font-size:1rem;margin:20px 0 6px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:1.5em}
+  li{margin:5px 0}
+  strong{color:var(--accent-dark)}
+  code{background:var(--code-bg);padding:1px 6px;border-radius:4px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.9em}
+  .box{border-radius:9px;padding:14px 18px;margin:18px 0;border:1px solid}
+  .box p:first-child{margin-top:0}.box p:last-child{margin-bottom:0}
+  .box .lbl{font-weight:700;font-size:.82rem;letter-spacing:.05em;display:block;margin-bottom:6px}
+  .exam{background:var(--exam);border-color:var(--exam-border)}
+  .exam .lbl{color:var(--accent-dark)}
+  .note{background:var(--note);border-color:var(--note-border)}
+  .note .lbl{color:var(--blue-dark)}
+  .warn{background:var(--warn);border-color:var(--warn-border)}
+  .warn .lbl{color:#b23b34}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:.92rem;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--code-bg);font-weight:700}
+  tbody tr:nth-child(even){background:rgba(127,127,127,.05)}
+  .src{background:var(--src);border:1px solid var(--src-border);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.85rem}
+  .src .lbl{font-weight:700;color:#2e7d32;display:block;margin-bottom:5px}
+  .src ul{margin:4px 0;padding-left:1.3em}
+  .src a{color:var(--blue);word-break:break-all}
+  .quiz{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin:20px 0}
+  .quiz .qn{font-weight:700;color:var(--accent-dark);font-size:.85rem;letter-spacing:.05em}
+  .quiz .qbody{font-weight:600;margin:6px 0 12px}
+  .quiz ul.choices{list-style:none;padding:0;margin:0}
+  .quiz ul.choices li{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 13px;margin:7px 0}
+  details.ans{margin-top:14px;border-top:1px dashed var(--border);padding-top:12px}
+  details.ans summary{cursor:pointer;font-weight:700;color:var(--blue);list-style:none}
+  details.ans summary::-webkit-details-marker{display:none}
+  details.ans summary::before{content:"▶ ";font-size:.8em}
+  details.ans[open] summary::before{content:"▼ "}
+  details.ans .correct{font-weight:700;color:#2e7d32;margin:10px 0 6px}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;text-align:center}
+  .pager{display:flex;justify-content:space-between;margin-top:40px;gap:12px;flex-wrap:wrap}
+  .pager a{color:var(--blue);text-decoration:none;font-weight:600;border:1px solid var(--border);border-radius:8px;padding:10px 16px;background:var(--card)}
+  .pager a:hover{border-color:var(--blue)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <p class="kicker">AWS Certified Solutions Architect – Associate (SAA-C03)</p>
+    <h1>第1章　セキュアなアーキテクチャの設計</h1>
+    <p>試験比重 30%（採点対象コンテンツ内で最大の分野）／ 第1分野 タスクステートメント 1.1〜1.3 準拠</p>
+  </div>
+</header>
+
+<nav class="chapnav">
+  <a href="index.html">目次</a><span class="sp">|</span>
+  <a href="domain1.html">第1章 セキュア設計</a><span class="sp">|</span>
+  <a href="domain2.html">第2章 弾力性設計</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="toc">
+    <h2>この章の構成</h2>
+    <ol>
+      <li><a href="#s0">1-0　この章の位置づけと責任共有モデル</a></li>
+      <li><a href="#s1">1-1　IAMとアクセス管理（タスク 1.1）</a></li>
+      <li><a href="#s2">1-2　ネットワークセキュリティとワークロード保護（タスク 1.2）</a></li>
+      <li><a href="#s3">1-3　データ保護と暗号化（タスク 1.3）</a></li>
+      <li><a href="#quiz">理解度確認問題（5問）</a></li>
+    </ol>
+  </div>
+
+  <!-- ============ 1-0 ============ -->
+  <section id="s0">
+    <h2 class="sec">1-0　この章の位置づけと責任共有モデル</h2>
+    <p>
+      SAA-C03試験は4つのコンテンツドメインで構成され、第1分野「セキュアなアーキテクチャの設計」は
+      採点対象コンテンツの<strong>30%</strong>を占める最大の分野です。ソリューションアーキテクトには、
+      「動くシステム」ではなく「安全に動くシステム」を設計する力が求められます。本章は公式試験ガイドの
+      タスクステートメント1.1（セキュアなアクセス）／1.2（セキュアなワークロード）／1.3（データセキュリティ）に
+      沿って構成しています。
+    </p>
+
+    <h3>責任共有モデル（Shared Responsibility Model）</h3>
+    <p>
+      AWSのセキュリティは、AWSと利用者の間で責任を分担する<strong>責任共有モデル</strong>が土台です。
+      端的に言うと、AWSは「<strong>クラウド<em>の</em>セキュリティ</strong>」、利用者は「<strong>クラウド<em>内</em>のセキュリティ</strong>」に責任を持ちます。
+    </p>
+    <table>
+      <thead><tr><th>区分</th><th>責任者</th><th>主な対象例</th></tr></thead>
+      <tbody>
+        <tr><td>クラウド<em>の</em>セキュリティ</td><td>AWS</td><td>データセンターの物理セキュリティ、ハードウェア、ネットワーク基盤、ハイパーバイザー、マネージドサービスの基盤ソフトウェア</td></tr>
+        <tr><td>クラウド<em>内</em>のセキュリティ</td><td>利用者</td><td>データの暗号化、IAMの設定、セキュリティグループ/NACL、ゲストOSのパッチ、アプリケーションのコード、ネットワーク構成</td></tr>
+      </tbody>
+    </table>
+    <p>
+      重要なのは、責任の境界が<strong>サービスの抽象度によって動く</strong>点です。EC2（IaaS）ではOSのパッチ適用は利用者の責任ですが、
+      RDSやLambda、S3のようなマネージドサービスではOSやランタイムの保守はAWS側に移ります。ただし、
+      <strong>データそのものとアクセス制御（IAM）は常に利用者の責任</strong>である、と覚えてください。
+    </p>
+    <div class="box exam">
+      <span class="lbl">試験ポイント</span>
+      <p>「〇〇のパッチは誰の責任か」「マネージドサービスに変えると責任はどう変わるか」という問いが頻出です。
+      <strong>データ暗号化とIAMは常に利用者側</strong>、物理・基盤は常にAWS側、その中間（OS/ミドルウェア）はサービス種別で動く、と整理しておきましょう。</p>
+    </div>
+    <div class="src">
+      <span class="lbl">参照した情報源</span>
+      <ul>
+        <li>AWS 責任共有モデル: <a href="https://aws.amazon.com/jp/compliance/shared-responsibility-model/">https://aws.amazon.com/jp/compliance/shared-responsibility-model/</a></li>
+        <li>SAA-C03 試験ガイド（v1.1）: <a href="https://d1.awsstatic.com/ja_JP/training-and-certification/docs-sa-assoc/AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf">試験ガイドPDF</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 1-1 IAM ============ -->
+  <section id="s1">
+    <h2 class="sec"><span class="ts">タスクステートメント 1.1｜AWSリソースへのセキュアなアクセスを設計する</span>1-1　IAMとアクセス管理</h2>
+
+    <h3>ルートユーザーの保護</h3>
+    <p>
+      AWSアカウント作成時のメールアドレスでサインインする<strong>ルートユーザー</strong>は、アカウント内のすべてに対する
+      無制限の権限を持ちます。日常運用では使わず、次の保護を徹底します。
+    </p>
+    <ul>
+      <li>ルートユーザーに<strong>MFA（多要素認証）</strong>を設定する。</li>
+      <li>ルートユーザーの<strong>アクセスキーは作成しない</strong>（作成済みなら削除）。</li>
+      <li>日常の操作は、必要な権限だけを持つIAMユーザー/ロールで行う。</li>
+    </ul>
+    <p>
+      ルートユーザーでしか実行できない操作（アカウント設定の変更、解約、特定の課金設定など）に限って使用します。
+    </p>
+
+    <h3>IAMの3つのアイデンティティ：ユーザー・グループ・ロール</h3>
+    <table>
+      <thead><tr><th>要素</th><th>特徴</th><th>認証情報</th></tr></thead>
+      <tbody>
+        <tr><td>IAMユーザー</td><td>人やアプリに紐づく永続的なID</td><td>パスワード／アクセスキー（<strong>長期</strong>認証情報）</td></tr>
+        <tr><td>IAMグループ</td><td>ユーザーの集合。権限をまとめて付与する入れ物（グループ自体はサインイン不可）</td><td>なし</td></tr>
+        <tr><td>IAMロール</td><td>「引き受けて（Assume）」使う、権限のセット。EC2・Lambda・他アカウント・外部IdPが引き受ける</td><td>STSが発行する<strong>一時</strong>認証情報</td></tr>
+      </tbody>
+    </table>
+    <div class="box note">
+      <span class="lbl">設計の基本</span>
+      <p>アプリやAWSサービス（EC2上のアプリなど）にAWS権限を与えるときは、<strong>アクセスキーを埋め込まず、IAMロールを使う</strong>のが鉄則です。
+      ロールが発行する一時認証情報は自動でローテーションされ、キー漏洩リスクを大幅に下げられます。</p>
+    </div>
+
+    <h3>IAMポリシーと評価ロジック</h3>
+    <p>
+      権限は<strong>ポリシー</strong>（JSONドキュメント）で定義します。主な要素は
+      <code>Effect</code>（Allow/Deny）、<code>Action</code>（許可する操作）、<code>Resource</code>（対象）、
+      <code>Condition</code>（条件）です。ポリシーには大きく2種類あります。
+    </p>
+    <ul>
+      <li><strong>アイデンティティベースポリシー</strong>：ユーザー/グループ/ロールに<em>アタッチ</em>する（「この人は何ができるか」）。</li>
+      <li><strong>リソースベースポリシー</strong>：リソース側に<em>アタッチ</em>する（「このリソースに誰が触れるか」）。S3バケットポリシーやKMSキーポリシーが代表例で、<strong>クロスアカウントアクセスの許可</strong>に使えます。</li>
+    </ul>
+    <p>複数のポリシーが絡んだときの評価は、次の原則で決まります。</p>
+    <ol>
+      <li><strong>デフォルトは暗黙的な拒否（Implicit Deny）</strong>。どこにも許可がなければアクセスできない。</li>
+      <li>いずれかのポリシーに<strong>明示的な許可（Allow）</strong>があれば許可される。</li>
+      <li>ただし、いずれかに<strong>明示的な拒否（Explicit Deny）があれば、それが最優先</strong>で、他のAllowをすべて上書きして拒否する。</li>
+    </ol>
+    <p>
+      さらに組織環境では、<strong>SCP（サービスコントロールポリシー）</strong>や<strong>権限境界</strong>による
+      「許可の上限（ガードレール）」も評価されます。SCP等で許可されていない操作は、たとえIAMポリシーでAllowでも実行できません。
+    </p>
+    <div class="box exam">
+      <span class="lbl">試験ポイント</span>
+      <p>「IAMポリシーではAllowなのにアクセスできない」→ <strong>明示的Denyがある</strong>か、<strong>SCP/権限境界の上限に引っかかっている</strong>かを疑います。
+      評価は「明示的Deny ＞ 明示的Allow ＞ 暗黙的Deny」の順で、Denyが常に勝つと覚えましょう。</p>
+    </div>
+
+    <h3>STS・ロールスイッチ・クロスアカウント</h3>
+    <p>
+      <strong>AWS STS（Security Token Service）</strong>は一時的な認証情報を発行するサービスです。
+      <code>AssumeRole</code>でロールを引き受けると、期限付きのキーが得られます。これにより、
+    </p>
+    <ul>
+      <li><strong>ロールスイッチ</strong>：1人のユーザーが用途に応じて権限セットを切り替える。</li>
+      <li><strong>クロスアカウントアクセス</strong>：アカウントAのユーザーが、アカウントBのロールを引き受けてBのリソースを操作する。長期キーを共有せずに実現できる。</li>
+    </ul>
+
+    <h3>フェデレーションと IAM Identity Center</h3>
+    <p>
+      社内の既存ID基盤（Active DirectoryやOkta等の外部IdP）のアカウントでAWSにサインインさせるのが<strong>フェデレーション</strong>です。
+      AWSユーザーを個別に作らずに済み、退職者の管理も一元化できます。
+    </p>
+    <p>
+      <strong>AWS IAM Identity Center</strong>（旧 AWS Single Sign-On）は、複数のAWSアカウントや業務アプリへの
+      シングルサインオンを提供します。外部IdPと連携し、<strong>権限セット</strong>を通じて「どのアカウントで何ができるか」を
+      集中管理できます。複数アカウント運用では、各アカウントにIAMユーザーを作るのではなく、Identity Centerで一元化するのが定石です。
+    </p>
+
+    <h3>マルチアカウントのガバナンス：Organizations・SCP・Control Tower</h3>
+    <ul>
+      <li><strong>AWS Organizations</strong>：複数アカウントを組織単位（OU）で束ね、一括請求とポリシー適用を行う。</li>
+      <li><strong>SCP（サービスコントロールポリシー）</strong>：OUやアカウントに適用する<strong>許可の上限</strong>。権限を<em>付与</em>するものではなく、
+        「この組織では使えるサービス/操作の枠」を定めるガードレール。ルートユーザーにも効く。</li>
+      <li><strong>AWS Control Tower</strong>：ベストプラクティスに沿ったマルチアカウント環境（ランディングゾーン）を自動構築し、
+        ガードレールで統制する上位サービス。</li>
+    </ul>
+    <div class="box warn">
+      <span class="lbl">よくある誤解</span>
+      <p>SCPは<strong>許可を与えません</strong>。SCPで許可されていても、IAMポリシー側でAllowしなければアクセスできません。
+      「SCP（上限）とIAMポリシー（実際の付与）の<strong>両方でAllow</strong>」が必要、と理解してください。</p>
+    </div>
+    <div class="src">
+      <span class="lbl">参照した情報源</span>
+      <ul>
+        <li>IAM ユーザーガイド（ID・ロール・ポリシー）: <a href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction.html">https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/introduction.html</a></li>
+        <li>ポリシーの評価論理: <a href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/reference_policies_evaluation-logic.html">reference_policies_evaluation-logic.html</a></li>
+        <li>AWS STS の一時的セキュリティ認証情報: <a href="https://docs.aws.amazon.com/ja_jp/IAM/latest/UserGuide/id_credentials_temp.html">id_credentials_temp.html</a></li>
+        <li>AWS IAM Identity Center: <a href="https://docs.aws.amazon.com/ja_jp/singlesignon/latest/userguide/what-is.html">singlesignon userguide</a></li>
+        <li>AWS Organizations / SCP: <a href="https://docs.aws.amazon.com/ja_jp/organizations/latest/userguide/orgs_manage_policies_scps.html">orgs_manage_policies_scps.html</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 1-2 Network ============ -->
+  <section id="s2">
+    <h2 class="sec"><span class="ts">タスクステートメント 1.2｜セキュアなワークロードとアプリケーションを設計する</span>1-2　ネットワークセキュリティとワークロード保護</h2>
+
+    <h3>VPCとサブネット設計の基本</h3>
+    <p>
+      <strong>VPC（Virtual Private Cloud）</strong>は、AWS上に構築する論理的に隔離された自分専用のネットワークです。
+      その中を<strong>サブネット</strong>に分割し、ルートテーブルで通信経路を制御します。セキュリティ設計の出発点は、
+      「インターネットに直接公開してよいものだけをパブリックに置く」という切り分けです。
+    </p>
+    <table>
+      <thead><tr><th>種類</th><th>特徴</th><th>置くもの（例）</th></tr></thead>
+      <tbody>
+        <tr><td>パブリックサブネット</td><td>ルートテーブルに<strong>インターネットゲートウェイ（IGW）</strong>へのルートがある</td><td>ロードバランサー、踏み台、NATゲートウェイ</td></tr>
+        <tr><td>プライベートサブネット</td><td>IGWへの直接ルートがない。外向き通信は<strong>NATゲートウェイ</strong>経由</td><td>アプリサーバー、DB（RDS）</td></tr>
+      </tbody>
+    </table>
+    <p>
+      <strong>NATゲートウェイ</strong>は、プライベートサブネットのリソースが「外へ出る（アウトバウンド）」通信を可能にしつつ、
+      外部から中への接続を遮断します。DBやアプリサーバーはプライベートに置き、必要な入口だけを絞るのが基本形です。
+    </p>
+
+    <h3>セキュリティグループ vs ネットワークACL</h3>
+    <p>この2つの違いは試験頻出です。ステートフル/ステートレスの区別を確実に押さえましょう。</p>
+    <table>
+      <thead><tr><th>観点</th><th>セキュリティグループ（SG）</th><th>ネットワークACL（NACL）</th></tr></thead>
+      <tbody>
+        <tr><td>適用単位</td><td>ENI（インスタンス）レベル</td><td>サブネットレベル</td></tr>
+        <tr><td>状態</td><td><strong>ステートフル</strong>：許可した通信の戻りは自動的に許可</td><td><strong>ステートレス</strong>：戻りの通信も明示的にルールが必要</td></tr>
+        <tr><td>ルール</td><td><strong>許可（Allow）のみ</strong>。拒否ルールは書けない</td><td>許可と<strong>拒否（Deny）の両方</strong>が書ける</td></tr>
+        <tr><td>評価</td><td>すべてのルールを総合して判定</td><td>ルール番号の<strong>小さい順</strong>に評価し、最初に一致したもので決定</td></tr>
+        <tr><td>デフォルト</td><td>インバウンド全拒否／アウトバウンド全許可</td><td>デフォルトNACLは全許可</td></tr>
+      </tbody>
+    </table>
+    <div class="box exam">
+      <span class="lbl">試験ポイント</span>
+      <p>「特定IPを<strong>明示的にブロック</strong>したい」→ SGでは不可能なので<strong>NACL</strong>を使う。
+      通常のアクセス制御はSG（ステートフルで扱いやすい）、サブネット全体の粗いガードやIP拒否はNACL、という役割分担で覚えます。</p>
+    </div>
+
+    <h3>VPCエンドポイント：インターネットを経由しないアクセス</h3>
+    <p>
+      プライベートサブネットのリソースからS3やDynamoDBなどのAWSサービスへアクセスする際、
+      NATゲートウェイ経由でインターネットに出さずに接続できるのが<strong>VPCエンドポイント</strong>です。
+    </p>
+    <ul>
+      <li><strong>ゲートウェイ型エンドポイント</strong>：<strong>S3・DynamoDB</strong>専用。ルートテーブルにエントリを追加する方式。追加料金なし。</li>
+      <li><strong>インターフェース型エンドポイント（AWS PrivateLink）</strong>：多くのサービスに対応。サブネット内に<strong>ENI（プライベートIP）</strong>を作り、そこ経由で接続する。</li>
+    </ul>
+
+    <h3>境界防御：WAF と Shield</h3>
+    <table>
+      <thead><tr><th>サービス</th><th>守る層</th><th>役割</th></tr></thead>
+      <tbody>
+        <tr><td><strong>AWS WAF</strong></td><td>レイヤー7（HTTP/HTTPS）</td><td>SQLインジェクションやクロスサイトスクリプティング（XSS）など、Webアプリへの攻撃をルールでブロック。CloudFront・ALB・API Gateway・AppSyncに適用</td></tr>
+        <tr><td><strong>AWS Shield Standard</strong></td><td>レイヤー3/4</td><td>一般的なDDoS攻撃から自動保護。全AWS利用者に<strong>無料</strong>で適用</td></tr>
+        <tr><td><strong>AWS Shield Advanced</strong></td><td>L3/4＋L7支援</td><td>有料。高度なDDoS検知、DDoS対応チーム（DRT/SRT）支援、攻撃起因のスケール費用に対するコスト保護</td></tr>
+      </tbody>
+    </table>
+    <div class="box note">
+      <span class="lbl">使い分け</span>
+      <p><strong>SQLインジェクションのようなアプリ層攻撃 → WAF</strong>、<strong>大量トラフィックによるDDoS → Shield</strong>。
+      「WebアプリをL7攻撃から守る」ならWAF、と即答できるようにしておきましょう。</p>
+    </div>
+
+    <h3>脅威検知：GuardDuty・Macie・Inspector</h3>
+    <ul>
+      <li><strong>Amazon GuardDuty</strong>：<strong>脅威検知</strong>サービス。CloudTrail・VPCフローログ・DNSログなどを機械学習で分析し、
+        不審なアクティビティ（不正アクセス、マルウェア通信など）を検出。エージェント不要。</li>
+      <li><strong>Amazon Macie</strong>：<strong>S3内の機密データ</strong>（個人情報などのPII）を機械学習で発見・分類し、公開設定の問題も可視化する。</li>
+      <li><strong>Amazon Inspector</strong>：EC2・コンテナイメージ・Lambdaの<strong>脆弱性（CVE）</strong>を自動スキャンする。</li>
+    </ul>
+    <div class="box exam">
+      <span class="lbl">試験ポイント</span>
+      <p>キーワードで即断：「<strong>脅威・不審な挙動の検知</strong>＝GuardDuty」「<strong>S3の機密データ発見・分類</strong>＝Macie」「<strong>脆弱性スキャン</strong>＝Inspector」。役割が混同されやすいので対応表で暗記します。</p>
+    </div>
+
+    <h3>アプリ認証とハイブリッド接続</h3>
+    <ul>
+      <li><strong>Amazon Cognito</strong>：Web/モバイルアプリのユーザー認証（ユーザープール）と、認証済みユーザーへのAWSリソースアクセス付与（IDプール）を提供。</li>
+      <li><strong>AWS Site-to-Site VPN</strong>：インターネット経由でオンプレとVPCをIPsecで接続。短期間・低コストで開始できる。</li>
+      <li><strong>AWS Direct Connect</strong>：AWSへの<strong>専用線</strong>接続。安定した帯域と低レイテンシ、通信料の削減。インターネットを経由しない。</li>
+    </ul>
+    <div class="src">
+      <span class="lbl">参照した情報源</span>
+      <ul>
+        <li>VPC（セキュリティグループ／NACL）: <a href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-security-groups.html">vpc-security-groups.html</a> ／ <a href="https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/vpc-network-acls.html">vpc-network-acls.html</a></li>
+        <li>VPCエンドポイント: <a href="https://docs.aws.amazon.com/ja_jp/vpc/latest/privatelink/concepts.html">privatelink/concepts.html</a></li>
+        <li>AWS WAF / Shield: <a href="https://docs.aws.amazon.com/ja_jp/waf/latest/developerguide/what-is-aws-waf.html">what-is-aws-waf.html</a></li>
+        <li>Amazon GuardDuty: <a href="https://docs.aws.amazon.com/ja_jp/guardduty/latest/ug/what-is-guardduty.html">what-is-guardduty.html</a> ／ Macie: <a href="https://docs.aws.amazon.com/ja_jp/macie/latest/user/what-is-macie.html">what-is-macie.html</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 1-3 Data ============ -->
+  <section id="s3">
+    <h2 class="sec"><span class="ts">タスクステートメント 1.3｜適切なデータセキュリティ管理を判断する</span>1-3　データ保護と暗号化</h2>
+
+    <h3>AWS KMS と暗号化の考え方</h3>
+    <p>
+      <strong>AWS KMS（Key Management Service）</strong>は暗号鍵を集中管理するサービスです。多くのAWSサービスが
+      「保管中データの暗号化」でKMSを利用します。KMSの中核概念を押さえましょう。
+    </p>
+    <ul>
+      <li><strong>エンベロープ暗号化</strong>：実データは高速な<strong>データキー</strong>で暗号化し、そのデータキー自体をKMSキー（鍵暗号鍵）で暗号化する二段構え。KMSキー本体はKMSの外に出ません。</li>
+      <li>KMSキーの種類：
+        <ul>
+          <li><strong>カスタマー管理キー</strong>：利用者が作成・管理。キーポリシー、ローテーション設定、アクセス制御を細かく制御できる。</li>
+          <li><strong>AWS管理キー</strong>（例 <code>aws/s3</code>）：サービスが自動作成・管理。設定はできないが手軽。</li>
+          <li><strong>AWS所有キー</strong>：AWSが所有し利用者からは見えない。</li>
+        </ul>
+      </li>
+      <li><strong>キーポリシー</strong>：KMSキーへのアクセスを定めるリソースベースポリシー。鍵の利用可否は最終的にここで制御する。</li>
+    </ul>
+
+    <h4>鍵のローテーション（2026年時点の仕様）</h4>
+    <table>
+      <thead><tr><th>鍵の種類</th><th>自動ローテーション</th><th>周期</th></tr></thead>
+      <tbody>
+        <tr><td>カスタマー管理キー</td><td><strong>任意（デフォルト無効）</strong>。有効化できる</td><td>デフォルト<strong>365日</strong>。<strong>カスタム周期</strong>も指定可。加えて<strong>オンデマンドローテーション</strong>も可能</td></tr>
+        <tr><td>AWS管理キー</td><td>常に有効（無効化不可）</td><td><strong>毎年（約365日）</strong>。2022年5月に3年周期から1年周期へ変更された</td></tr>
+        <tr><td>AWS所有キー</td><td>サービスが管理</td><td>サービス側の戦略に従う</td></tr>
+      </tbody>
+    </table>
+    <div class="box note">
+      <span class="lbl">補足</span>
+      <p>自動ローテーションで新しい鍵マテリアルが作られても、<strong>古い鍵マテリアルは保持</strong>されます（KMS生成鍵はキー削除時まで保持）。
+      過去に暗号化したデータも復号できるため、アプリの変更は不要です。ローテーションされても<strong>キーID（論理リソース）は変わりません</strong>。</p>
+    </div>
+
+    <h3>S3の暗号化（保管中）</h3>
+    <p>
+      Amazon S3は<strong>2023年1月5日以降、すべての新規オブジェクトを既定で暗号化</strong>します。
+      ベースラインは<strong>SSE-S3（Amazon S3管理キー・AES-256）</strong>で、追加料金なし・性能影響なしで自動適用され、
+      <strong>新規アップロードの暗号化は無効化できません</strong>。要件に応じて、より強い管理方式を選べます。
+    </p>
+    <table>
+      <thead><tr><th>方式</th><th>鍵の管理</th><th>使いどころ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SSE-S3</strong></td><td>S3が管理（AES-256）</td><td>既定。手間なく暗号化したい</td></tr>
+        <tr><td><strong>SSE-KMS</strong></td><td>KMSキー</td><td><strong>鍵の使用をCloudTrailで監査</strong>し、アクセスをキーポリシーで細かく制御したい</td></tr>
+        <tr><td><strong>DSSE-KMS</strong></td><td>KMSキーで<strong>二重</strong>暗号化</td><td>規制等で多層の暗号化が求められる</td></tr>
+        <tr><td>SSE-C</td><td>顧客が鍵を提供</td><td>鍵をAWSに預けず自分で管理したい</td></tr>
+      </tbody>
+    </table>
+    <p>転送中は<strong>HTTPS（TLS）</strong>でアクセスし、バケットポリシーで暗号化通信を強制できます。</p>
+
+    <h3>EBSの暗号化</h3>
+    <ul>
+      <li>EBS暗号化はKMSキーを用い、<strong>保管中データと、インスタンス〜ボリューム間の転送中データの両方</strong>を保護する。</li>
+      <li><strong>デフォルト暗号化</strong>は<strong>アカウント×リージョン単位の設定</strong>。有効化すると、以後作成するボリュームが自動で暗号化される（既定の鍵は指定しなければ <code>aws/ebs</code>）。</li>
+      <li><strong>既存の非暗号化ボリュームをその場で暗号化に変えることはできない</strong>。スナップショットを取り、その<strong>暗号化コピー</strong>から新しいボリュームを作る、という手順を踏む。</li>
+      <li>暗号化ボリュームから作ったスナップショット、さらにそこから復元したボリュームは<strong>常に暗号化</strong>される（暗号化は解除できない）。</li>
+    </ul>
+
+    <h3>転送中の暗号化とACM</h3>
+    <p>
+      通信経路の保護（転送中データの暗号化）は<strong>TLS</strong>で行います。
+      <strong>AWS Certificate Manager（ACM）</strong>はTLS証明書の発行・管理・<strong>自動更新</strong>を担い、
+      ELB・CloudFront・API Gatewayなどに統合できます。ACMが発行するパブリック証明書は自動更新されるため、
+      証明書失効による障害を防げます。
+    </p>
+
+    <h3>Secrets Manager と認証情報の保護</h3>
+    <ul>
+      <li><strong>AWS Secrets Manager</strong>：DBパスワードやAPIキーなどのシークレットを暗号化保管し、<strong>自動ローテーション</strong>もできる。アプリはコードに秘密情報を埋め込まず、実行時に取得する。</li>
+      <li><strong>Systems Manager Parameter Store</strong>：設定値やシークレットを保管。標準パラメータは無料。自動ローテーションが要る、あるいは高度なシークレット管理なら Secrets Manager が適する。</li>
+    </ul>
+    <div class="box exam">
+      <span class="lbl">試験ポイント</span>
+      <p>「DB認証情報を安全に保管し<strong>定期的に自動ローテーション</strong>したい」→ <strong>Secrets Manager</strong>。
+      「保管中データを暗号化し<strong>鍵の使用を監査</strong>したい」→ <strong>SSE-KMS＋カスタマー管理キー</strong>。
+      「TLS証明書を自動更新したい」→ <strong>ACM</strong>。この対応で多くの問題に答えられます。</p>
+    </div>
+    <div class="src">
+      <span class="lbl">参照した情報源</span>
+      <ul>
+        <li>AWS KMS 鍵のローテーション: <a href="https://docs.aws.amazon.com/ja_jp/kms/latest/developerguide/rotate-keys.html">rotate-keys.html</a></li>
+        <li>S3 デフォルト暗号化 FAQ: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-encryption-faq.html">default-encryption-faq.html</a> ／ サーバー側暗号化: <a href="https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/serv-side-encryption.html">serv-side-encryption.html</a></li>
+        <li>Amazon EBS 暗号化: <a href="https://docs.aws.amazon.com/ja_jp/ebs/latest/userguide/ebs-encryption.html">ebs-encryption.html</a></li>
+        <li>AWS Certificate Manager: <a href="https://docs.aws.amazon.com/ja_jp/acm/latest/userguide/acm-overview.html">acm-overview.html</a></li>
+        <li>AWS Secrets Manager: <a href="https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/intro.html">secretsmanager intro.html</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quiz">
+    <h2 class="sec">理解度確認問題（5問）</h2>
+    <p>各問、選択肢を選んでから「解答と解説を見る」を開いてください。実際の試験と同じ、シナリオ形式の4択です。</p>
+
+    <div class="quiz">
+      <div class="qn">問1</div>
+      <div class="qbody">アカウントAで稼働するLambda関数から、アカウントBのS3バケットにあるオブジェクトを読み取る必要がある。長期的な認証情報を共有せずに実現する、最もセキュアな方法はどれか。</div>
+      <ul class="choices">
+        <li>A. アカウントBにIAMユーザーを作成し、そのアクセスキーをアカウントAのLambdaの環境変数に設定する</li>
+        <li>B. アカウントBにクロスアカウント用のIAMロールを作成し、バケットポリシーで許可、アカウントAのLambda実行ロールにそのロールを<code>AssumeRole</code>させる</li>
+        <li>C. S3バケットを一時的にパブリック公開にして読み取る</li>
+        <li>D. アカウントBのルートユーザーのアクセスキーをLambdaに設定する</li>
+      </ul>
+      <details class="ans">
+        <summary>解答と解説を見る</summary>
+        <p class="correct">正解：B</p>
+        <p>クロスアカウントアクセスは、<strong>相手アカウントにIAMロールを用意し、STSの<code>AssumeRole</code>で一時認証情報を得る</strong>のが定石です。
+        リソースベースポリシー（バケットポリシー）と組み合わせて最小権限で許可できます。</p>
+        <p>A・Dは<strong>長期のアクセスキーを共有</strong>しており、要件（共有しない）に反し漏洩リスクも高い。特にDのルートキー利用は重大なアンチパターン。
+        Cはデータを世界に公開してしまい論外です。</p>
+      </details>
+    </div>
+
+    <div class="quiz">
+      <div class="qn">問2</div>
+      <div class="qbody">あるIAMユーザーのアイデンティティベースポリシーには特定のS3操作を許可するAllowが付いている。しかし操作するとアクセス拒否になる。組織ではそのユーザーが属するOUに、当該S3操作を許可していないSCPが適用されていた。この状況の説明として正しいものはどれか。</div>
+      <ul class="choices">
+        <li>A. IAMポリシーでAllowされていれば、SCPの内容に関わらず操作できるはずである</li>
+        <li>B. SCPは許可の上限（ガードレール）であり、SCPで許可されていない操作はIAMのAllowがあっても実行できない</li>
+        <li>C. SCPは請求専用の機能で、権限には影響しない</li>
+        <li>D. ルートユーザーで操作すればSCPを回避できる</li>
+      </ul>
+      <details class="ans">
+        <summary>解答と解説を見る</summary>
+        <p class="correct">正解：B</p>
+        <p>SCPは<strong>許可の上限</strong>を定めるもので、実際にアクセスするには「SCP（上限）」と「IAMポリシー（付与）」の<strong>両方でAllow</strong>が必要です。
+        SCPで許可されていなければ、IAM側がAllowでも拒否されます。</p>
+        <p>Aは評価順序の誤解。Cは誤り（SCPは権限のガードレール）。DもSCPは<strong>ルートユーザーにも効く</strong>ため回避できません。</p>
+      </details>
+    </div>
+
+    <div class="quiz">
+      <div class="qn">問3</div>
+      <div class="qbody">医療系企業が、S3に保管するデータを暗号化したうえで、「どの鍵がいつ誰の操作で使われたか」を監査ログで追跡し、鍵へのアクセスをきめ細かく制御したいと考えている。最も適した暗号化方式はどれか。</div>
+      <ul class="choices">
+        <li>A. SSE-S3（Amazon S3管理キー）</li>
+        <li>B. SSE-KMS（カスタマー管理キー）</li>
+        <li>C. 暗号化は行わず、バケットを非公開にするだけにする</li>
+        <li>D. クライアント側で各自バラバラに暗号化し、鍵管理はしない</li>
+      </ul>
+      <details class="ans">
+        <summary>解答と解説を見る</summary>
+        <p class="correct">正解：B</p>
+        <p><strong>鍵の使用をCloudTrailで監査</strong>し、<strong>キーポリシーでアクセスを細かく制御</strong>できるのはSSE-KMSです。
+        カスタマー管理キーなら、ローテーションやアクセスポリシーも自分で管理できます。</p>
+        <p>Aは手軽ですが、鍵利用の監査やアクセス制御の粒度はKMSに劣ります。Cは暗号化要件を満たしません
+        （なお2023年以降、新規オブジェクトは最低でもSSE-S3で暗号化されます）。Dは鍵管理が破綻し運用に耐えません。</p>
+      </details>
+    </div>
+
+    <div class="quiz">
+      <div class="qn">問4</div>
+      <div class="qbody">公開Webアプリケーションが、SQLインジェクションを狙ったリクエストを受けている。アプリケーション層（レイヤー7）でこうした不正リクエストをフィルタリングしてブロックする、最も適切なサービスはどれか。</div>
+      <ul class="choices">
+        <li>A. AWS Shield Standard</li>
+        <li>B. ネットワークACL（NACL）</li>
+        <li>C. AWS WAF</li>
+        <li>D. セキュリティグループ</li>
+      </ul>
+      <details class="ans">
+        <summary>解答と解説を見る</summary>
+        <p class="correct">正解：C</p>
+        <p>SQLインジェクションやXSSといった<strong>L7のWeb攻撃</strong>をルールでブロックするのは<strong>AWS WAF</strong>です。
+        CloudFrontやALB、API Gatewayに適用します。</p>
+        <p>AのShieldはL3/4のDDoS対策が主目的。B・DはIP/ポート単位の制御であり、HTTPリクエストの中身（SQL構文など）を検査できません。</p>
+      </details>
+    </div>
+
+    <div class="quiz">
+      <div class="qn">問5</div>
+      <div class="qbody">プライベートサブネットのEC2インスタンスから、同一リージョンのS3バケットへアクセスさせたい。通信を<strong>インターネットに一切出さず</strong>、かつ余計なコストを避けたい。最適な構成はどれか。</div>
+      <ul class="choices">
+        <li>A. インターネットゲートウェイ（IGW）を追加してパブリック経路で接続する</li>
+        <li>B. NATゲートウェイを設置し、インターネット経由でS3にアクセスする</li>
+        <li>C. S3向けの<strong>ゲートウェイ型VPCエンドポイント</strong>を作成し、ルートテーブルに追加する</li>
+        <li>D. インスタンスをパブリックサブネットに移動し、パブリックIPを付与する</li>
+      </ul>
+      <details class="ans">
+        <summary>解答と解説を見る</summary>
+        <p class="correct">正解：C</p>
+        <p>S3・DynamoDBには<strong>ゲートウェイ型VPCエンドポイント</strong>があり、ルートテーブルにエントリを追加するだけで
+        <strong>インターネットを経由せず</strong>プライベートに接続できます。<strong>追加料金もかかりません</strong>。</p>
+        <p>A・Dはインスタンスをインターネットに露出させます。BのNATゲートウェイはインターネット経由であり、要件（外に出さない）に反するうえ時間・処理料金が発生します。</p>
+      </details>
+    </div>
+  </section>
+
+  <div class="pager">
+    <a href="index.html">← 目次へ</a>
+    <a href="domain2.html">第2章 弾力性に優れたアーキテクチャの設計 →</a>
+  </div>
+
+  <footer>
+    <p>SAA-C03 学習テキスト 第1章 ／ 情報源：AWS公式ドキュメント・AWS認定 試験ガイド（v1.1）<br>
+    本テキストは学習用にAWS公式情報を再構成したものです。サービス仕様は2026年時点の公式ドキュメントに基づきます。</p>
+  </footer>
+
+</div>
+</body>
+</html>

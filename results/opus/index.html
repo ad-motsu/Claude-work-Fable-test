@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAA-C03 学習テキスト（第1章・第2章）| 目次</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --fg:#1f2933; --muted:#52616b; --card:#ffffff;
+    --border:#dfe3e8; --accent:#ec7211; --accent-dark:#d35400;
+    --blue:#146eb4; --blue-dark:#0f5a94; --code-bg:#eef1f4;
+    --note:#e8f2fb; --note-border:#7fb3e0; --src:#eef6ee; --src-border:#9fc79f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1419; --fg:#e5e9ec; --muted:#a3b1bb; --card:#1a222b;
+      --border:#2c3742; --accent:#ff9d4d; --accent-dark:#ffb066;
+      --blue:#5aa9e6; --blue-dark:#8cc4f0; --code-bg:#202932;
+      --note:#12242f; --note-border:#2f5f80; --src:#16241a; --src-border:#3c6b40;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.85;font-size:16px;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px 80px}
+  header.top{
+    background:linear-gradient(135deg,#232f3e,#146eb4);
+    color:#fff;padding:46px 20px;
+  }
+  header.top .inner{max-width:900px;margin:0 auto}
+  header.top .kicker{font-size:.82rem;letter-spacing:.16em;opacity:.85;margin:0 0 8px}
+  header.top h1{margin:0;font-size:2rem;line-height:1.35}
+  header.top p{margin:12px 0 0;opacity:.92;font-size:.98rem;max-width:660px}
+  section{margin:42px 0}
+  h2{font-size:1.35rem;border-left:6px solid var(--accent);padding:4px 0 4px 14px;margin:0 0 14px}
+  h3{font-size:1.05rem;margin:22px 0 6px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:1.5em}
+  li{margin:6px 0}
+  strong{color:var(--accent-dark)}
+  a{color:var(--blue)}
+  .chapters{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0}
+  @media(max-width:640px){.chapters{grid-template-columns:1fr}}
+  .chapcard{
+    display:block;text-decoration:none;color:inherit;background:var(--card);
+    border:1px solid var(--border);border-radius:12px;padding:22px;transition:.15s;
+  }
+  .chapcard:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 18px rgba(20,110,180,.12)}
+  .chapcard .badge{display:inline-block;font-size:.75rem;font-weight:700;color:#fff;background:var(--accent);border-radius:20px;padding:2px 11px;margin-bottom:10px}
+  .chapcard .badge.g{background:#2e8b57}
+  .chapcard h3{margin:0 0 6px;font-size:1.18rem;border:none;padding:0}
+  .chapcard p{margin:6px 0 0;font-size:.9rem;color:var(--muted)}
+  .chapcard .go{margin-top:12px;font-weight:700;color:var(--blue);font-size:.9rem}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.92rem;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--code-bg);font-weight:700}
+  tbody tr:nth-child(even){background:rgba(127,127,127,.05)}
+  .stats{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0}
+  .stat{flex:1;min-width:130px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+  .stat .num{font-size:1.5rem;font-weight:800;color:var(--blue-dark)}
+  .stat .lab{font-size:.8rem;color:var(--muted);margin-top:2px}
+  .box{border-radius:9px;padding:14px 18px;margin:16px 0;border:1px solid;background:var(--note);border-color:var(--note-border)}
+  .box .lbl{font-weight:700;font-size:.82rem;display:block;margin-bottom:6px;color:var(--blue-dark)}
+  .src{background:var(--src);border:1px solid var(--src-border);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.85rem}
+  .src .lbl{font-weight:700;color:#2e7d32;display:block;margin-bottom:5px}
+  .src ul{margin:4px 0;padding-left:1.3em}
+  .src a{word-break:break-all}
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;text-align:center}
+  .scope{background:var(--card);border:1px dashed var(--border);border-radius:8px;padding:10px 16px;font-size:.88rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <p class="kicker">AWS Certified Solutions Architect – Associate (SAA-C03)</p>
+    <h1>SAA-C03 学習テキスト</h1>
+    <p>クラウド実務経験1年程度のエンジニア向けに、AWS公式情報源だけを根拠にまとめた日本語学習テキストです。本教材のスコープは第1章（セキュア設計）・第2章（弾力性設計）です。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="overview">
+    <h2>試験の概要</h2>
+    <p>SAA-C03は、AWS Well-Architected フレームワークに基づいてソリューションを設計する能力を検証する認定試験です。まず全体像を数字で押さえましょう。</p>
+    <div class="stats">
+      <div class="stat"><div class="num">65問</div><div class="lab">出題数（採点対象50＋評価用15）</div></div>
+      <div class="stat"><div class="num">130分</div><div class="lab">試験時間</div></div>
+      <div class="stat"><div class="num">720</div><div class="lab">合格スコア（100〜1,000）</div></div>
+      <div class="stat"><div class="num">150 USD</div><div class="lab">受験料</div></div>
+    </div>
+    <ul>
+      <li>設問形式は<strong>択一選択</strong>（正解1・不正解3）と<strong>複数選択</strong>（5択以上から正解2つ以上）の2種類。</li>
+      <li>合否判定方式（スケールスコア）。<strong>未解答は不正解</strong>扱いで、推測による解答にペナルティはない（＝空欄にしない）。</li>
+      <li>スコアはセクションごとの合否ではなく、<strong>試験全体のスコア</strong>で判定される。</li>
+    </ul>
+
+    <h3>4つのコンテンツドメインと比重</h3>
+    <table>
+      <thead><tr><th>分野</th><th>内容</th><th>比重</th><th>本教材</th></tr></thead>
+      <tbody>
+        <tr><td>第1分野</td><td>セキュアなアーキテクチャの設計</td><td><strong>30%</strong></td><td>✅ 第1章</td></tr>
+        <tr><td>第2分野</td><td>弾力性に優れたアーキテクチャの設計</td><td><strong>26%</strong></td><td>✅ 第2章</td></tr>
+        <tr><td>第3分野</td><td>高パフォーマンスなアーキテクチャの設計</td><td>24%</td><td>対象外</td></tr>
+        <tr><td>第4分野</td><td>コストを最適化したアーキテクチャの設計</td><td>20%</td><td>対象外</td></tr>
+      </tbody>
+    </table>
+    <p class="scope">本教材は第1章・第2章（合計で採点対象の<strong>約56%</strong>）を扱います。第3章・第4章はスコープ外です。</p>
+  </section>
+
+  <section id="chapters">
+    <h2>章の目次</h2>
+    <div class="chapters">
+      <a class="chapcard" href="domain1.html">
+        <span class="badge">第1章 ・ 比重30%</span>
+        <h3>セキュアなアーキテクチャの設計</h3>
+        <p>責任共有モデル／IAMとアクセス管理（ポリシー評価・STS・Identity Center・SCP）／ネットワークセキュリティ（SG・NACL・WAF・Shield・GuardDuty）／データ保護と暗号化（KMS・S3/EBS暗号化・ACM・Secrets Manager）</p>
+        <div class="go">章を開く（章末に確認問題5問）→</div>
+      </a>
+      <a class="chapcard" href="domain2.html">
+        <span class="badge g">第2章 ・ 比重26%</span>
+        <h3>弾力性に優れたアーキテクチャの設計</h3>
+        <p>スケーラブルで疎結合な設計（ELB・Auto Scaling・SQS/SNS/EventBridge・サーバーレス）／高可用性・フォールトトレラント（マルチAZ・Route 53・RDS/Aurora/DynamoDB）／バックアップとDR戦略（RTO/RPO・DR4類型）</p>
+        <div class="go">章を開く（章末に確認問題5問）→</div>
+      </a>
+    </div>
+  </section>
+
+  <section id="howto">
+    <h2>学習の進め方</h2>
+    <ol>
+      <li><strong>タスクステートメントを地図にする</strong>：各章は公式試験ガイドの「タスクステートメント」に対応づけています。今どの出題範囲を学んでいるかを意識すると、抜け漏れに気づけます。</li>
+      <li><strong>「どのサービスを選ぶか」で考える</strong>：SAAは知識の暗記より<strong>適切なサービス選定</strong>を問います。各章の「試験ポイント」枠にある選択の分かれ目（例：WAF vs Shield、マルチAZ vs リードレプリカ）を重点的に。</li>
+      <li><strong>章末問題で自己診断</strong>：各章末の5問はシナリオ形式です。まず選択肢を選び、解説で「なぜ他が誤りか」まで理解しましょう。</li>
+      <li><strong>公式情報源で裏を取る</strong>：本文末の「参照した情報源」から一次情報にあたる習慣をつけると、仕様変更にも対応できます。</li>
+    </ol>
+    <div class="box">
+      <span class="lbl">この教材の方針</span>
+      <p>本教材は<strong>AWS公式ドキュメント・AWS公式ホワイトペーパー・AWS認定 試験ガイド</strong>のみを情報源とし、内容は自分の言葉で再構成しています。
+      サービス仕様（暗号化のデフォルト挙動など）は<strong>2026年時点</strong>の公式ドキュメントに基づいて記述しています。</p>
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="src">
+      <span class="lbl">この教材が依拠した一次情報源（AWS公式）</span>
+      <ul>
+        <li>SAA-C03 試験ガイド（v1.1）: <a href="https://d1.awsstatic.com/ja_JP/training-and-certification/docs-sa-assoc/AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf">試験ガイドPDF</a></li>
+        <li>試験公式ページ（試験時間・問題数・受験料）: <a href="https://aws.amazon.com/certification/certified-solutions-architect-associate/">certified-solutions-architect-associate</a></li>
+        <li>AWS 公式ドキュメント: <a href="https://docs.aws.amazon.com/">docs.aws.amazon.com</a>（IAM / KMS / S3 / EBS / VPC / ELB / Auto Scaling / RDS / Aurora / DynamoDB / Route 53 / SQS / SNS / EventBridge / AWS Backup 等の各ユーザーガイド）</li>
+        <li>AWS ホワイトペーパー: <a href="https://docs.aws.amazon.com/ja_jp/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">Disaster Recovery of Workloads on AWS</a> ／ <a href="https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/reliability-pillar/welcome.html">Well-Architected 信頼性の柱</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p>SAA-C03 学習テキスト ／ 第1章・第2章 ／ 情報源：AWS公式のみ<br>
+    本教材は学習目的でAWS公式情報を再構成した非公式の資料です。最新かつ正確な情報は必ず公式サイトでご確認ください。</p>
+  </footer>
+
+</div>
+</body>
+</html>

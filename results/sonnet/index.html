@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAA-C03学習テキスト 目次</title>
+<style>
+  :root {
+    --color-bg: #f7f9fb;
+    --color-surface: #ffffff;
+    --color-text: #1c2530;
+    --color-text-sub: #4b5563;
+    --color-primary: #1a3a6b;
+    --color-primary-dark: #0f2647;
+    --color-accent: #c0562b;
+    --color-border: #dbe3ea;
+    --color-code-bg: #eef1f7;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.8;
+  }
+  header.page-header {
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+    color: #fff;
+    padding: 2.6rem 1.5rem;
+  }
+  header.page-header .eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin: 0 0 0.4rem;
+  }
+  header.page-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.8rem;
+  }
+  header.page-header p.lead {
+    margin: 0;
+    opacity: 0.9;
+    max-width: 640px;
+  }
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+  section.content {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.8rem 2rem;
+    margin-top: 1.5rem;
+  }
+  section.content h2 {
+    color: var(--color-primary-dark);
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.5rem;
+    font-size: 1.3rem;
+  }
+  section.content h3 {
+    color: var(--color-primary);
+    font-size: 1.05rem;
+    margin-top: 1.6rem;
+  }
+  p { margin: 0.8rem 0; }
+  .note {
+    background: var(--color-code-bg);
+    border-left: 4px solid var(--color-primary);
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+  .note p { margin: 0.3rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  th, td {
+    border: 1px solid var(--color-border);
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--color-code-bg); }
+  ul, ol { padding-left: 1.4rem; }
+  .chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .chapter-card {
+    display: block;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+  .chapter-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 10px rgba(15, 38, 71, 0.08);
+  }
+  .chapter-card .num {
+    display: inline-block;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    margin-bottom: 0.4rem;
+  }
+  .chapter-card h3 {
+    margin: 0.2rem 0 0.3rem;
+    color: var(--color-primary-dark);
+    font-size: 1.1rem;
+  }
+  .chapter-card p {
+    margin: 0;
+    color: var(--color-text-sub);
+    font-size: 0.92rem;
+  }
+  .sources {
+    margin-top: 1.2rem;
+    font-size: 0.88rem;
+    color: var(--color-text-sub);
+    border-top: 1px dashed var(--color-border);
+    padding-top: 0.8rem;
+  }
+  .sources p { margin: 0.2rem 0; }
+  .sources a { color: var(--color-primary); }
+  footer.page-footer {
+    text-align: center;
+    color: var(--color-text-sub);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">AWS Certified Solutions Architect - Associate (SAA-C03)</p>
+  <h1>SAA-C03 学習テキスト（第1章・第2章）</h1>
+  <p class="lead">
+    クラウド実務経験1年程度のエンジニア向けに、AWS公式情報源のみを根拠として作成した学習テキストです。
+    本テキストは第1章・第2章のみを対象としています（第3章・第4章は範囲外です）。
+  </p>
+</header>
+
+<div class="wrap">
+
+<section class="content" id="toc">
+<h2>目次</h2>
+<ul class="chapter-list">
+  <li>
+    <a class="chapter-card" href="domain1.html">
+      <span class="num">Domain 1 ・ 試験比重 30%</span>
+      <h3>第1章　セキュアなアーキテクチャの設計</h3>
+      <p>IAMとアクセス設計 / VPCセキュリティと脅威対策サービス / データ暗号化と鍵管理　＋　章末問題5問</p>
+    </a>
+  </li>
+  <li>
+    <a class="chapter-card" href="domain2.html">
+      <span class="num">Domain 2 ・ 試験比重 26%</span>
+      <h3>第2章　弾力性に優れたアーキテクチャの設計</h3>
+      <p>マルチAZ/マルチリージョン設計 / 疎結合アーキテクチャ / コンピュートとスケーリング / ストレージ・DBの可用性 / バックアップ・DR戦略　＋　章末問題5問</p>
+    </a>
+  </li>
+</ul>
+<div class="note">
+  <p>本テキストがカバーするのはDomain 1・Domain 2のみです。Domain 3（高性能アーキテクチャ）・Domain 4（コスト最適化アーキテクチャ）は本テキストのスコープ外です。</p>
+</div>
+</section>
+
+<section class="content" id="how-to-study">
+<h2>学習の進め方</h2>
+<ol>
+  <li>まず第1章のイントロで「責任共有モデル」を理解し、1.1（IAM）→1.2（ネットワーク/脅威対策）→1.3（データ保護）の順に読み進めてください。</li>
+  <li>各節の末尾には参照した公式情報源のURLを明記しています。理解が浅いと感じた用語は、必ずリンク先の一次情報を確認してください。</li>
+  <li>章末問題は、解答を自分で考えてから解説を読むようにしてください。誤答した問題は、該当する節に戻って該当箇所を読み直すことを推奨します。</li>
+  <li>第1章を終えたら第2章（マルチAZ/マルチリージョン設計から始まる回復性の設計）に進んでください。</li>
+  <li>本テキストはDomain 1・2のみを扱う教材です。試験全体（Domain 3・4を含む）の対策には、本テキストに加えてAWS公式試験ガイドや追加の学習教材を利用してください。</li>
+</ol>
+</section>
+
+<section class="content" id="exam-overview">
+<h2>試験概要（AWS公式試験ガイド・公式認定ページで確認済み）</h2>
+<table>
+  <thead>
+    <tr><th>項目</th><th>内容</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>出題数</td><td>65問（スコア対象50問＋未スコア15問。未スコア問題は試験中に区別されない）</td></tr>
+    <tr><td>出題形式</td><td>multiple choice（単一正解＋誤答3つ）／multiple response（2つ以上の正解を選択）</td></tr>
+    <tr><td>試験時間</td><td>130分</td></tr>
+    <tr><td>合格スコア</td><td>720（スケールスコア100〜1000のうち）</td></tr>
+    <tr><td>採点方式</td><td>コンペンセイトリー方式（総合点で合否判定。セクションごとの合格基準はない）</td></tr>
+    <tr><td>受験料</td><td>150 USD</td></tr>
+  </tbody>
+</table>
+<p>ドメイン別の出題比重は次のとおりです。</p>
+<table>
+  <thead>
+    <tr><th>ドメイン</th><th>比重</th><th>本テキストでの扱い</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Domain 1: Design Secure Architectures</td><td>30%</td><td>第1章として収録</td></tr>
+    <tr><td>Domain 2: Design Resilient Architectures</td><td>26%</td><td>第2章として収録</td></tr>
+    <tr><td>Domain 3: Design High-Performing Architectures</td><td>24%</td><td>本テキストの範囲外</td></tr>
+    <tr><td>Domain 4: Design Cost-Optimized Architectures</td><td>20%</td><td>本テキストの範囲外</td></tr>
+  </tbody>
+</table>
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - AWS Certified Solutions Architect - Associate (SAA-C03) Exam Guide（出題数・出題形式・試験時間・合格スコア・採点方式）:
+<a href="https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html</a></p>
+<p>AWS公式サイト - 「AWS Certified Solutions Architect – Associate」認定ページ（Exam overview：試験時間・受験料）:
+<a href="https://aws.amazon.com/certification/certified-solutions-architect-associate/" target="_blank" rel="noopener">https://aws.amazon.com/certification/certified-solutions-architect-associate/</a></p>
+</div>
+</section>
+
+<footer class="page-footer">
+  <p><a href="domain1.html">第1章へ進む</a>　|　<a href="domain2.html">第2章へ進む</a></p>
+</footer>
+
+</div>
+</body>
+</html>

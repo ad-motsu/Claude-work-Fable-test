@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第1章 セキュアなアーキテクチャの設計 | SAA-C03 学習テキスト</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161d2e; --panel2:#1c2740; --ink:#e8ecf4; --muted:#9aa6bd;
+    --line:#2a3550; --accent:#4f9cff; --accent2:#37d0a0; --warn:#ffb454; --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.85;font-size:16px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 100px}
+  header.top{padding:48px 20px 36px;background:linear-gradient(160deg,#182238,#0f1420);border-bottom:1px solid var(--line)}
+  header.top .wrap{padding-bottom:0}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.08em;font-size:.82rem;margin:0 0 8px}
+  h1{font-size:1.9rem;line-height:1.4;margin:0 0 10px}
+  .lead{color:var(--muted);margin:6px 0 0;font-size:1rem}
+  .weight{display:inline-block;margin-top:16px;padding:6px 14px;border:1px solid var(--accent);
+    border-radius:999px;color:var(--accent);font-weight:700;font-size:.85rem}
+  nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:28px 0}
+  nav.toc b{display:block;color:var(--muted);font-size:.8rem;letter-spacing:.05em;margin-bottom:8px}
+  nav.toc a{color:var(--ink);text-decoration:none;display:block;padding:4px 0;border-bottom:1px dashed transparent}
+  nav.toc a:hover{color:var(--accent)}
+  section{margin:46px 0}
+  h2{font-size:1.5rem;margin:0 0 6px;padding-top:14px;border-top:2px solid var(--accent);display:inline-block}
+  .task{color:var(--accent2);font-size:.85rem;font-weight:700;margin:2px 0 18px}
+  h3{font-size:1.2rem;margin:34px 0 10px;color:#fff}
+  h4{font-size:1.02rem;margin:22px 0 8px;color:var(--accent)}
+  p{margin:12px 0}
+  ul,ol{margin:12px 0;padding-left:1.4em}
+  li{margin:6px 0}
+  strong{color:#fff}
+  code{background:#0b1020;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SFMono-Regular",Menlo,Consolas,monospace;color:#9fd0ff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.94rem;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:#fff;white-space:nowrap}
+  tbody tr:nth-child(even),tr:nth-child(even){background:#131b2c}
+  .callout{border-left:4px solid var(--accent);background:var(--panel);border-radius:0 10px 10px 0;
+    padding:14px 18px;margin:18px 0}
+  .callout.tip{border-color:var(--accent2)}
+  .callout.warn{border-color:var(--warn)}
+  .callout .cap{font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:4px}
+  .callout.tip .cap{color:var(--accent2)}
+  .callout.warn .cap{color:var(--warn)}
+  .callout.note .cap{color:var(--accent)}
+  .sources{margin:22px 0 0;background:#0b1020;border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+  .sources .cap{color:var(--muted);font-size:.78rem;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+  .sources ul{margin:4px 0;padding-left:1.2em}
+  .sources li{font-size:.86rem;word-break:break-all;color:var(--muted)}
+  .sources a{color:#7fb6ff;text-decoration:none}
+  .sources a:hover{text-decoration:underline}
+  /* quiz */
+  .quiz{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:22px 0}
+  .q{font-weight:700;color:#fff;margin:0 0 12px}
+  .choices{list-style:none;padding:0;margin:0 0 6px}
+  .choices li{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 14px;margin:7px 0}
+  details.ans{margin-top:12px;background:#0b1020;border:1px solid var(--line);border-radius:8px;padding:4px 14px}
+  details.ans summary{cursor:pointer;color:var(--accent2);font-weight:700;padding:8px 0}
+  details.ans .body{padding:4px 0 12px}
+  .badge{display:inline-block;background:var(--accent2);color:#04150f;font-weight:800;border-radius:6px;
+    padding:2px 10px;font-size:.82rem;margin-right:8px}
+  footer.pager{display:flex;justify-content:space-between;gap:12px;margin-top:60px;
+    border-top:1px solid var(--line);padding-top:24px}
+  footer.pager a{color:var(--accent);text-decoration:none;font-weight:600}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;
+    padding:1px 9px;font-size:.8rem;color:var(--muted);margin:0 4px 4px 0}
+  @media(max-width:600px){h1{font-size:1.5rem}h2{font-size:1.3rem}body{font-size:15px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">AWS 認定ソリューションアーキテクト – アソシエイト（SAA-C03）</p>
+    <h1>第1章　セキュアなアーキテクチャの設計</h1>
+    <p class="lead">Domain 1: Design Secure Architectures ／ 対象読者: クラウド実務1年程度のエンジニア</p>
+    <span class="weight">試験比重 30%（全4ドメイン中で最大）</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <b>この章の構成</b>
+  <a href="#intro">はじめに — このドメインで問われること</a>
+  <a href="#s11">1.1　IAMとアクセス管理（Task 1.1）</a>
+  <a href="#s12">1.2　ワークロードとネットワークのセキュリティ（Task 1.2）</a>
+  <a href="#s13">1.3　データ保護と暗号化（Task 1.3）</a>
+  <a href="#quiz">章末問題（5問・4択・解説つき）</a>
+</nav>
+
+<section id="intro">
+  <h2>はじめに</h2>
+  <p class="task">Domain 1 は採点対象の <strong>30%</strong> を占め、4ドメインの中で最も配点が大きい領域です。</p>
+  <p>SAA-C03 の Domain 1 は「セキュリティ機能を単体で暗記する」試験ではなく、<strong>要件（コンプライアンス、最小権限、暗号化義務、DDoS 耐性など）に対してどの AWS サービスを、どう組み合わせるか</strong>を選ばせる試験です。公式試験ガイドはこのドメインを3つのタスクステートメントに分けています。本章もそれに沿って構成します。</p>
+  <ul>
+    <li><strong>Task 1.1　AWSリソースへの安全なアクセス設計</strong> — 誰が・何に・どこまでアクセスできるか（IAM、フェデレーション、マルチアカウント）</li>
+    <li><strong>Task 1.2　安全なワークロード／アプリの設計</strong> — ネットワーク境界、脅威対策、アプリの資格情報管理</li>
+    <li><strong>Task 1.3　適切なデータセキュリティ制御の判断</strong> — 保管中・転送中の暗号化、鍵管理、データ保護</li>
+  </ul>
+  <div class="callout note">
+    <div class="cap">まず押さえる前提：責任共有モデル</div>
+    <p>AWS は「<strong>クラウド“の”セキュリティ</strong>（＝物理施設・ハードウェア・マネージドサービスの基盤）」を担い、利用者は「<strong>クラウド“内”のセキュリティ</strong>（＝IAM 設定、OS/アプリのパッチ、データの暗号化、ネットワーク構成）」を担います。責任の境界はサービスによって動きます。EC2 のような IaaS では利用者の責任範囲が広く、S3 や Lambda のようなマネージドサービスでは AWS 側の範囲が広がります。<strong>「この設定は誰の責任か」を切り分ける視点</strong>は、Domain 1 の設問を読み解く土台になります。</p>
+  </div>
+  <div class="sources">
+    <div class="cap">情報源</div>
+    <ul>
+      <li>SAA-C03 試験ガイド（Version 1.1）: <a href="https://d1.awsstatic.com/training-and-certification/docs-sa-assoc/AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf">d1.awsstatic.com/.../AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf</a></li>
+      <li>責任共有モデル: <a href="https://aws.amazon.com/compliance/shared-responsibility-model/">aws.amazon.com/compliance/shared-responsibility-model/</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="s11">
+  <h2>1.1　IAMとアクセス管理</h2>
+  <p class="task">Task Statement 1.1: Design secure access to AWS resources.</p>
+
+  <h3>IAM の4つの構成要素</h3>
+  <p>IAM（Identity and Access Management）は AWS 内の「誰が」「何を」できるかを決める仕組みです。実務で名前は知っていても、試験では各要素の<strong>使い分けの判断</strong>が問われます。</p>
+  <table>
+    <tr><th>要素</th><th>役割</th><th>設計上のポイント</th></tr>
+    <tr><td><strong>ユーザー</strong></td><td>永続的な資格情報を持つ個人・人間の ID</td><td>長期のアクセスキーは極力避ける。人間には後述の Identity Center を推奨</td></tr>
+    <tr><td><strong>グループ</strong></td><td>ユーザーをまとめて権限を付与する箱</td><td>権限はグループに付け、個人ユーザーへの直接付与を減らすと管理が楽</td></tr>
+    <tr><td><strong>ロール</strong></td><td>一時的な認証情報を「引き受ける（assume）」仕組み。EC2・Lambda・他アカウント・フェデレーションユーザーが使う</td><td><strong>アクセスキーの埋め込みを不要にする鍵</strong>。試験の頻出テーマ</td></tr>
+    <tr><td><strong>ポリシー</strong></td><td>許可/拒否を JSON で定義したルール</td><td>アイデンティティベースとリソースベースの2系統がある（後述）</td></tr>
+  </table>
+
+  <div class="callout tip">
+    <div class="cap">実務の「知っている」から一歩進める</div>
+    <p>EC2 インスタンスから S3 を読ませたいとき、<strong>アクセスキーをコードや環境変数に置くのは設計ミス</strong>と判断されます。正解は <code>IAM ロール</code> をインスタンスプロファイル経由でアタッチし、EC2 が STS から一時認証情報を自動取得する構成です。「資格情報がハードコードされている／ローテーションされない」という選択肢は、ほぼ不正解の距離にあります。</p>
+  </div>
+
+  <h3>ポリシー評価ロジック — 試験の最重要トピック</h3>
+  <p>複数のポリシーが同時に効いているとき、最終的な許可/拒否がどう決まるかは頻出です。基本ルールは次の順序です。</p>
+  <ol>
+    <li><strong>明示的な Deny が1つでもあれば、即座に拒否</strong>（最優先。他の Allow を必ず上書きする）</li>
+    <li>明示的な Deny がなく、<strong>いずれかのポリシーに Allow があれば許可</strong></li>
+    <li>どこにも Allow がなければ <strong>暗黙的な拒否（デフォルト Deny）</strong></li>
+  </ol>
+  <p>合言葉は「<strong>明示的 Deny ＞ 明示的 Allow ＞ 暗黙的 Deny</strong>」です。加えて、評価に関わるポリシーは1種類ではありません。</p>
+  <table>
+    <tr><th>ポリシーの種類</th><th>何に付くか</th><th>典型的な用途</th></tr>
+    <tr><td>アイデンティティベースポリシー</td><td>ユーザー/グループ/ロール</td><td>「この ID は何ができるか」を定義</td></tr>
+    <tr><td>リソースベースポリシー</td><td>S3バケット、SQS、KMSキー等のリソース側</td><td>クロスアカウントアクセスや、誰にリソースを開くかを定義</td></tr>
+    <tr><td><strong>SCP</strong>（サービスコントロールポリシー）</td><td>Organizations の OU/アカウント</td><td>アカウント全体の<strong>権限の上限（ガードレール）</strong>を設定。許可は付与せず、上限を絞るだけ</td></tr>
+    <tr><td>権限境界（Permissions Boundary）</td><td>ユーザー/ロール</td><td>そのIDが持てる権限の最大範囲を制限（委任時の暴走防止）</td></tr>
+    <tr><td>セッションポリシー</td><td>AssumeRole 時に一時付与</td><td>一時セッションの権限をさらに絞る</td></tr>
+  </table>
+  <div class="callout warn">
+    <div class="cap">よくある勘違い</div>
+    <p>SCP は「権限を<strong>付与</strong>する」ものではありません。SCP はアカウント内で<strong>行使できる権限の天井</strong>を決めるだけで、実際の許可は依然として IAM ポリシーが必要です。SCP で <code>Deny</code> された操作は、そのアカウントでは管理者（root を含む）でも実行できなくなります。</p>
+  </div>
+
+  <h3>ロールと STS、クロスアカウントアクセス</h3>
+  <p>ロールの本質は「<strong>AWS STS（Security Token Service）が発行する一時的な認証情報を引き受ける</strong>」ことです。長期キーと違い、有効期限つきで自動失効するため、漏えい時のリスクが小さくなります。試験で出るパターンは主に次の3つです。</p>
+  <ul>
+    <li><strong>サービスロール</strong>: EC2 / Lambda / ECS タスクなどが AWS API を呼ぶために引き受ける</li>
+    <li><strong>クロスアカウントアクセス</strong>: 本番アカウントのロールを、開発アカウントのユーザーが <code>sts:AssumeRole</code> で引き受ける。信頼ポリシーで「誰が引き受けてよいか」を定義する</li>
+    <li><strong>ロールスイッチ</strong>: 1人のユーザーが複数アカウント間を切り替えて作業する</li>
+  </ul>
+
+  <h3>フェデレーションと IAM Identity Center</h3>
+  <p>社内の既存 ID（Active Directory、Okta、Google Workspace など）で AWS にサインインさせたい場合、AWS に個別ユーザーを作らず<strong>フェデレーション</strong>します。仕組みは「外部 IdP で認証 → SAML/OIDC のトークン → IAM ロールを引き受ける」という流れです。</p>
+  <p>複数アカウントに人間がアクセスする現代的な推奨は <strong>IAM Identity Center</strong>（旧 AWS SSO）です。1か所で ID を管理し、アカウント×権限セットの割り当てを一元化できます。<strong>「多数のアカウントに大勢の従業員がアクセスする。IAM ユーザーを各アカウントに作りたくない」</strong>という要件が出たら、Identity Center が有力な解になります。</p>
+
+  <h3>マルチアカウント戦略：Organizations / SCP / Control Tower</h3>
+  <p>組織が成長するとアカウントは増えます。それらを束ねて統制するのが <strong>AWS Organizations</strong> です。</p>
+  <ul>
+    <li><strong>Organizations</strong>: 複数アカウントを OU（組織単位）で階層管理し、一括請求（Consolidated Billing）も担う</li>
+    <li><strong>SCP</strong>: OU/アカウント単位でガードレールを適用（例：「特定リージョン以外の利用を全社禁止」）</li>
+    <li><strong>AWS Control Tower</strong>: ベストプラクティスに沿ったマルチアカウント環境（ランディングゾーン）を自動構築・統制。裏で Organizations と SCP を使う</li>
+  </ul>
+
+  <h3>アクセスに関するベストプラクティス</h3>
+  <ul>
+    <li><strong>最小権限の原則</strong>: 必要な操作だけを許可し、広い <code>*</code> 権限は避ける</li>
+    <li><strong>root ユーザーの保護</strong>: 日常運用に使わず、MFA を有効化し、アクセスキーは作らない</li>
+    <li><strong>MFA の徹底</strong>: 特権操作・root には多要素認証を必須にする</li>
+    <li><strong>長期アクセスキーを避ける</strong>: 人間は Identity Center、ワークロードはロールで一時認証情報を使う</li>
+  </ul>
+
+  <div class="sources">
+    <div class="cap">情報源（1.1）</div>
+    <ul>
+      <li>ポリシーの評価ロジック: <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html">docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html</a></li>
+      <li>IAM ロール: <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html">docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html</a></li>
+      <li>IAM のセキュリティベストプラクティス: <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html">docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html</a></li>
+      <li>AWS IAM Identity Center とは: <a href="https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html">docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html</a></li>
+      <li>SCP（Organizations）: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html">docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html</a></li>
+      <li>AWS Control Tower とは: <a href="https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html">docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="s12">
+  <h2>1.2　ワークロードとネットワークのセキュリティ</h2>
+  <p class="task">Task Statement 1.2: Design secure workloads and applications.</p>
+
+  <h3>VPC のセキュリティ構成要素：SG と NACL の使い分け</h3>
+  <p>VPC 内のトラフィック制御は、主に<strong>セキュリティグループ（SG）</strong>と<strong>ネットワーク ACL（NACL）</strong>の2層で行います。両者の違いは最頻出です。</p>
+  <table>
+    <tr><th>観点</th><th>セキュリティグループ（SG）</th><th>ネットワーク ACL（NACL）</th></tr>
+    <tr><td>適用先</td><td>ENI（インスタンス）単位</td><td>サブネット単位</td></tr>
+    <tr><td>状態</td><td><strong>ステートフル</strong>（戻りの通信は自動許可）</td><td><strong>ステートレス</strong>（戻りの通信も明示的に許可が必要）</td></tr>
+    <tr><td>ルール</td><td>許可（Allow）のみ。拒否は書けない</td><td>許可と拒否の両方を書ける</td></tr>
+    <tr><td>評価</td><td>すべてのルールを総合評価</td><td>番号順に評価し、最初に一致したルールを適用</td></tr>
+    <tr><td>用途</td><td>インスタンスへの通信を細かく制御（第一の砦）</td><td>サブネット全体で特定 IP の遮断など補完的に使う</td></tr>
+  </table>
+  <div class="callout tip">
+    <div class="cap">判断のコツ</div>
+    <p>「特定の IP アドレスからのアクセスを<strong>明示的に拒否（ブロック）したい</strong>」という要件なら、Deny を書ける <strong>NACL</strong> が答えです。SG は許可ルールしか持てないため、拒否そのものを表現できません。</p>
+  </div>
+
+  <h4>ネットワークセグメンテーション</h4>
+  <p>基本設計は「<strong>公開が必要なものだけをパブリックサブネットに、それ以外はプライベートサブネットに</strong>」です。ロードバランサーや踏み台はパブリック側、アプリケーションサーバーや DB はプライベート側に置き、プライベートサブネットからのアウトバウンド通信は <strong>NAT ゲートウェイ</strong>経由にします。これによりインターネットから DB へ直接到達する経路をなくせます。</p>
+
+  <h3>脅威対策：WAF・Shield・DDoS</h3>
+  <table>
+    <tr><th>サービス</th><th>守る層</th><th>要点</th></tr>
+    <tr><td><strong>AWS WAF</strong></td><td>アプリケーション層（L7）</td><td>SQL インジェクションや XSS、不正な HTTP リクエストをルールでフィルタ。CloudFront / ALB / API Gateway に適用</td></tr>
+    <tr><td><strong>AWS Shield Standard</strong></td><td>ネットワーク／トランスポート層（L3/L4）</td><td>全 AWS 利用者に<strong>自動・無料</strong>で適用される基本的な DDoS 防御</td></tr>
+    <tr><td><strong>AWS Shield Advanced</strong></td><td>L3/L4/L7</td><td>有料サブスクリプション。高度な DDoS 検知、専門チーム（SRT）の支援、攻撃起因のスケール費用の補償を提供</td></tr>
+  </table>
+  <div class="callout note">
+    <div class="cap">組み合わせで考える</div>
+    <p>「L7 の SQL インジェクションを防ぎたい」なら <strong>WAF</strong>、「大規模 DDoS への追加保護と費用補償が欲しい」なら <strong>Shield Advanced</strong>。両者は排他ではなく、CloudFront + WAF + Shield Advanced のように<strong>多層で重ねる</strong>のが定石です。</p>
+  </div>
+
+  <h3>脅威の検知・可視化サービス</h3>
+  <p>「予防」だけでなく「検知」も設計に含めます。名前が似ていて紛らわしいので、<strong>何を入力に、何を見つけるか</strong>で覚えます。</p>
+  <table>
+    <tr><th>サービス</th><th>役割</th><th>覚え方</th></tr>
+    <tr><td><strong>Amazon GuardDuty</strong></td><td>脅威検知。VPCフローログ・DNSログ・CloudTrail等を機械学習で分析し、不審な挙動を検出</td><td>「悪意ある通信・侵害の兆候」を見張る番犬</td></tr>
+    <tr><td><strong>Amazon Macie</strong></td><td>S3 内の<strong>機密データ（個人情報・認証情報など）</strong>を検出・分類</td><td>データの中身を見る（Macie ＝ 機密データ）</td></tr>
+    <tr><td><strong>Amazon Inspector</strong></td><td>EC2・コンテナイメージ・Lambda の<strong>脆弱性</strong>を自動スキャン</td><td>パッチ未適用や CVE を点検</td></tr>
+    <tr><td><strong>AWS Security Hub</strong></td><td>各種セキュリティ結果を<strong>集約</strong>し、ベストプラクティス基準で評価（CSPM）</td><td>セキュリティ状態のダッシュボード</td></tr>
+  </table>
+
+  <h3>アプリの資格情報管理：Secrets Manager と Parameter Store</h3>
+  <p>DB パスワードや API キーをコードに書かないための選択肢が2つあります。</p>
+  <ul>
+    <li><strong>AWS Secrets Manager</strong>: シークレット専用。<strong>自動ローテーション</strong>（RDS 等と連携してパスワードを定期更新）を組み込みで持つ。有料</li>
+    <li><strong>SSM Parameter Store</strong>: 設定値やシークレットを保存。標準パラメータは無償で、<code>SecureString</code> で KMS 暗号化も可能。ただし自動ローテーションは標準機能ではない</li>
+  </ul>
+  <div class="callout tip">
+    <div class="cap">判断のコツ</div>
+    <p>「<strong>DB 認証情報を定期的に自動ローテーションしたい</strong>」なら Secrets Manager。「単に設定値やキーを安全に保存したい／コストを抑えたい」なら Parameter Store。ローテーション要件の有無が分岐点です。</p>
+  </div>
+
+  <h3>安全なアプリアクセスとエンドポイント</h3>
+  <ul>
+    <li><strong>Amazon Cognito</strong>: Web/モバイルアプリのユーザー認証（サインアップ/サインイン、SNS・SAML フェデレーション）を担うマネージド ID サービス</li>
+    <li><strong>VPC エンドポイント / AWS PrivateLink</strong>: S3 や DynamoDB、他サービスへの通信を<strong>インターネットを経由せず</strong> AWS 内部ネットワークで完結させる。ゲートウェイ型（S3/DynamoDB）とインターフェース型（PrivateLink）がある</li>
+  </ul>
+
+  <h3>ハイブリッド接続のセキュリティ</h3>
+  <table>
+    <tr><th>接続方式</th><th>特徴</th></tr>
+    <tr><td><strong>Site-to-Site VPN</strong></td><td>インターネット経由の暗号化トンネル。低コスト・短時間で開始できるが、帯域と遅延はインターネット依存</td></tr>
+    <tr><td><strong>AWS Direct Connect</strong></td><td>オンプレとAWSを結ぶ専用線。安定した帯域・低遅延。ただし単体では暗号化されないため、機密要件では上に IPsec VPN を重ねる構成もとる</td></tr>
+  </table>
+
+  <div class="sources">
+    <div class="cap">情報源（1.2）</div>
+    <ul>
+      <li>セキュリティグループ: <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html">docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html</a></li>
+      <li>ネットワーク ACL: <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html">docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html</a></li>
+      <li>AWS WAF とは: <a href="https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html">docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html</a></li>
+      <li>AWS Shield / DDoS 対策: <a href="https://docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html">docs.aws.amazon.com/waf/latest/developerguide/ddos-overview.html</a></li>
+      <li>Amazon GuardDuty とは: <a href="https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html">docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html</a></li>
+      <li>Amazon Macie とは: <a href="https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html">docs.aws.amazon.com/macie/latest/user/what-is-macie.html</a></li>
+      <li>AWS Security Hub とは: <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html">docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html</a></li>
+      <li>AWS Secrets Manager とは: <a href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html">docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html</a></li>
+      <li>AWS PrivateLink / VPC エンドポイント: <a href="https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html">docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="s13">
+  <h2>1.3　データ保護と暗号化</h2>
+  <p class="task">Task Statement 1.3: Determine appropriate data security controls.</p>
+
+  <h3>AWS KMS とエンベロープ暗号化</h3>
+  <p>保管中データの暗号化は <strong>AWS KMS（Key Management Service）</strong>が中心です。KMS の鍵（KMS キー）は3種類あります。</p>
+  <table>
+    <tr><th>鍵の種類</th><th>管理主体・特徴</th></tr>
+    <tr><td><strong>AWSマネージドキー</strong></td><td>サービス（<code>aws/s3</code> など）が自動生成。利用者は削除・ポリシー変更ができない。<strong>年1回自動ローテーション</strong></td></tr>
+    <tr><td><strong>カスタマー管理キー（CMK）</strong></td><td>利用者が作成・管理。キーポリシーやローテーション、削除を制御できる。監査やコンプライアンス要件で使う</td></tr>
+    <tr><td><strong>AWS所有キー</strong></td><td>AWS が複数顧客向けに保持。利用者からは見えない</td></tr>
+  </table>
+  <p>KMS は<strong>エンベロープ暗号化</strong>を使います。実データは高速な<strong>データキー</strong>で暗号化し、そのデータキー自体を KMS キーで暗号化して一緒に保管します。KMS キーは KMS の外に出ないため、鍵の安全性を保ちながら大量データを効率よく暗号化できます。</p>
+
+  <h4>キーのローテーション（2026年時点の仕様）</h4>
+  <ul>
+    <li>カスタマー管理キーは<strong>自動ローテーションを有効化</strong>でき、ローテーション間隔は <strong>90〜2560日の範囲で設定可能</strong>（デフォルトは約365日）。<strong>オンデマンドのローテーション</strong>も手動で実行できる</li>
+    <li>ローテーションしても<strong>キー ID は変わらず</strong>、古い鍵素材は過去データの復号のため保持される。アプリ側の参照を変更する必要はない</li>
+    <li>AWSマネージドキーは<strong>年1回</strong>自動でローテーションされる</li>
+  </ul>
+
+  <h3>保管中の暗号化：S3 と EBS（デフォルト挙動に注意）</h3>
+  <div class="callout warn">
+    <div class="cap">2026年時点の最新仕様 — S3 はデフォルトで暗号化される</div>
+    <p>Amazon S3 は<strong>2023年1月以降、すべての新規オブジェクトを既定で暗号化</strong>します。何も指定しなければ <code>SSE-S3</code>（AES-256、AWS 管理の鍵、追加料金なし）が自動適用されます。したがって「S3 の保管データが暗号化されていない」という前提の選択肢は、現在の仕様では基本的に成り立ちません。</p>
+  </div>
+  <p>S3 の暗号化方式（サーバーサイド暗号化）は用途で選びます。</p>
+  <table>
+    <tr><th>方式</th><th>鍵の管理</th><th>使いどころ</th></tr>
+    <tr><td><strong>SSE-S3</strong></td><td>AWS が管理（AES-256）</td><td>既定。特別な鍵要件がなければこれで十分</td></tr>
+    <tr><td><strong>SSE-KMS</strong></td><td>KMS キー（監査ログ・アクセス制御・ローテーション）</td><td>誰がいつ復号したかを CloudTrail で追跡したい、鍵アクセスを細かく制御したい場合</td></tr>
+    <tr><td><strong>DSSE-KMS</strong></td><td>KMS による<strong>二重</strong>暗号化</td><td>規制で多層暗号化が要求される場合</td></tr>
+    <tr><td><strong>SSE-C</strong></td><td>利用者が鍵を持ち込み、AWS は保持しない</td><td>鍵を自社管理し AWS に預けたくない場合</td></tr>
+  </table>
+  <p><strong>Amazon EBS</strong> はボリューム暗号化に KMS を使います。既定では新規ボリュームは暗号化されませんが、リージョン単位のアカウント設定で「<strong>デフォルト暗号化</strong>」を有効にすると、以降の新規ボリュームとスナップショットが自動的に暗号化されます。暗号化ボリュームから作ったスナップショット、その復元ボリュームも暗号化が引き継がれます。</p>
+
+  <h3>転送中の暗号化と ACM</h3>
+  <p>転送中データは <strong>TLS（HTTPS）</strong>で保護します。証明書の管理は <strong>AWS Certificate Manager（ACM）</strong>が担います。</p>
+  <ul>
+    <li>ACM が発行したパブリック証明書は<strong>自動更新（renewal）</strong>される。期限切れによる障害を避けられる</li>
+    <li>ACM 証明書は <strong>ELB・CloudFront・API Gateway</strong> などに直接関連付けて TLS を終端できる（EC2 に直接インストールする形では使えない点に注意）</li>
+    <li>KMS の「鍵のローテーション」と ACM の「証明書の更新」は、いずれも<strong>失効・漏えいリスクを下げる定期更新</strong>という同じ発想</li>
+  </ul>
+
+  <h3>データの保護・保持・復旧</h3>
+  <ul>
+    <li><strong>バックアップとレプリケーション</strong>: S3 のクロスリージョンレプリケーション、RDS スナップショット、AWS Backup による一元的なバックアップ（第2章で詳述）</li>
+    <li><strong>ライフサイクルとデータ分類</strong>: S3 ライフサイクルで古いデータを低コストストレージへ移行・失効。機密度の分類には Macie を併用</li>
+    <li><strong>アクセスとガバナンス</strong>: S3 のブロックパブリックアクセス、バケットポリシー、KMS キーポリシーで「誰が復号できるか」まで含めて制御する</li>
+  </ul>
+
+  <div class="sources">
+    <div class="cap">情報源（1.3）</div>
+    <ul>
+      <li>AWS KMS の概念: <a href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html">docs.aws.amazon.com/kms/latest/developerguide/concepts.html</a></li>
+      <li>KMS キーのローテーション: <a href="https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html">docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html</a></li>
+      <li>S3 のデフォルト暗号化: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html">docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html</a></li>
+      <li>S3 のサーバーサイド暗号化: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html">docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html</a></li>
+      <li>Amazon EBS 暗号化: <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html">docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html</a></li>
+      <li>AWS Certificate Manager とは: <a href="https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html">docs.aws.amazon.com/acm/latest/userguide/acm-overview.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="quiz">
+  <h2>章末問題</h2>
+  <p class="task">4択・全5問。各問の「解答と解説」を開く前に、まず自分で選んでみてください。</p>
+
+  <div class="quiz">
+    <p class="q">問1. あるユーザーに対し、アイデンティティベースポリシーは特定の S3 バケットへの <code>s3:GetObject</code> を明示的に許可している。一方、同じバケットのバケットポリシーは、そのユーザーのプリンシパルに対して <code>s3:GetObject</code> を明示的に拒否している。このユーザーはオブジェクトを取得できるか。</p>
+    <ul class="choices">
+      <li>A. 取得できる。アイデンティティベースポリシーの許可が優先されるため</li>
+      <li>B. 取得できない。明示的な拒否はすべての許可を上書きするため</li>
+      <li>C. 取得できる。バケットポリシーよりユーザーポリシーが強いため</li>
+      <li>D. どちらのポリシーが後に作成されたかで決まる</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>IAM の評価では「<strong>明示的 Deny ＞ 明示的 Allow ＞ 暗黙的 Deny</strong>」が絶対のルールです。どのポリシー（アイデンティティベース／リソースベース）に書かれていても、明示的な Deny が1つでもあれば結果は拒否になります。ポリシーの作成順序（D）や種類による優劣（A・C）は関係ありません。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問2. 数百のAWSアカウントを持つ企業が、全アカウントで「承認された特定リージョン以外のリソース作成を組織的に禁止」したい。管理者権限を持つ利用者であっても回避できないようにする。最も適切な仕組みはどれか。</p>
+    <ul class="choices">
+      <li>A. 各アカウントの全 IAM ユーザーに拒否ポリシーを個別付与する</li>
+      <li>B. AWS Organizations のサービスコントロールポリシー（SCP）で対象リージョンを拒否する</li>
+      <li>C. 各アカウントで NACL を設定してリージョンを制限する</li>
+      <li>D. IAM Identity Center の権限セットでリージョンを制限する</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>SCP はアカウント全体の<strong>権限の上限（ガードレール）</strong>で、そのアカウントの管理者や root であっても SCP の Deny を超えて操作できません。全アカウントに一括適用でき、スケールします。A は数百アカウントでは非現実的かつ抜け漏れが生じます。NACL（C）はネットワークトラフィック制御であり API のリージョン制限には使えません。Identity Center の権限セット（D）は Identity Center 経由のアクセスにしか効かず、アカウント全体の強制力はありません。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問3. EC2 上のアプリケーションから S3 バケットのオブジェクトを読み取る必要がある。セキュリティのベストプラクティスに最も沿った認証情報の扱いはどれか。</p>
+    <ul class="choices">
+      <li>A. IAM ユーザーのアクセスキーを作成し、アプリの環境変数に設定する</li>
+      <li>B. アクセスキーをソースコードに埋め込み、暗号化してデプロイする</li>
+      <li>C. S3 読み取り権限を持つ IAM ロールを EC2 インスタンスにアタッチする</li>
+      <li>D. root ユーザーのアクセスキーをインスタンスに配置する</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 C</span></p>
+      <p>EC2 に IAM ロールをアタッチすると、アプリは STS が発行する<strong>有効期限つきの一時認証情報</strong>を自動取得でき、長期キーをどこにも保存せずに済みます。ローテーションも AWS が自動で行います。A・B は長期キーの保存・漏えいリスクがあり、ローテーションもされません。D は root キーの利用そのものが重大なアンチパターンです。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問4. Web アプリケーションが SQL インジェクションや XSS などアプリケーション層（L7）の攻撃を受けている。CloudFront/ALB の前段でこれらの不正なリクエストをルールベースでフィルタするのに最も適したサービスはどれか。</p>
+    <ul class="choices">
+      <li>A. AWS Shield Standard</li>
+      <li>B. AWS WAF</li>
+      <li>C. セキュリティグループ</li>
+      <li>D. Amazon GuardDuty</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>AWS WAF は L7 の Web リクエストを検査し、SQL インジェクションや XSS、悪意あるパターンをルールで遮断します。Shield Standard（A）は L3/L4 の DDoS を自動防御しますが、L7 のインジェクション対策ではありません。セキュリティグループ（C）は IP/ポート単位の許可制御で、リクエスト内容は見られません。GuardDuty（D）は脅威を<strong>検知</strong>するサービスで、リクエストをインラインで<strong>ブロック</strong>する役割ではありません。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問5. RDS データベースの認証情報を安全に保管し、かつ<strong>定期的に自動でローテーション</strong>したい。最も適したサービスはどれか。</p>
+    <ul class="choices">
+      <li>A. SSM Parameter Store（標準パラメータ）に平文で保存する</li>
+      <li>B. AWS Secrets Manager に保存し、自動ローテーションを構成する</li>
+      <li>C. S3 バケットに暗号化して保存し、手動で更新する</li>
+      <li>D. IAM ポリシーに認証情報を記述する</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>AWS Secrets Manager はシークレット専用サービスで、RDS などと連携した<strong>認証情報の自動ローテーション</strong>を組み込みで提供します。Parameter Store（A）はシークレット保存はできますが、標準では自動ローテーション機能を持たず、平文保存は論外です。S3 への保存＋手動更新（C）は自動化要件を満たしません。IAM ポリシーは権限定義であり、認証情報の保管場所ではありません（D）。</p>
+    </div></details>
+  </div>
+</section>
+
+<footer class="pager">
+  <a href="index.html">← 目次へ</a>
+  <a href="domain2.html">第2章 弾力性に優れたアーキテクチャの設計 →</a>
+</footer>
+
+</div>
+</body>
+</html>

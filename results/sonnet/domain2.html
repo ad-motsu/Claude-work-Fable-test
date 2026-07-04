@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2章 弾力性に優れたアーキテクチャの設計 | SAA-C03学習テキスト</title>
+<style>
+  :root {
+    --color-bg: #f7f9fb;
+    --color-surface: #ffffff;
+    --color-text: #1c2530;
+    --color-text-sub: #4b5563;
+    --color-primary: #0b7a5f;
+    --color-primary-dark: #075640;
+    --color-accent: #c0562b;
+    --color-border: #dbe3ea;
+    --color-code-bg: #eaf4f0;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.8;
+  }
+  header.page-header {
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+    color: #fff;
+    padding: 2.2rem 1.5rem;
+  }
+  header.page-header .eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin: 0 0 0.4rem;
+  }
+  header.page-header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+  nav.toc {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-top: -1.5rem;
+    position: relative;
+  }
+  nav.toc h2 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+    color: var(--color-primary-dark);
+  }
+  nav.toc ol {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+  nav.toc a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  section.content {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.8rem 2rem;
+    margin-top: 1.5rem;
+  }
+  section.content h2 {
+    color: var(--color-primary-dark);
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 0.5rem;
+    font-size: 1.3rem;
+  }
+  section.content h3 {
+    color: var(--color-primary);
+    font-size: 1.08rem;
+    margin-top: 2rem;
+  }
+  p { margin: 0.8rem 0; }
+  .note {
+    background: var(--color-code-bg);
+    border-left: 4px solid var(--color-primary);
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+  .note.warn { border-left-color: var(--color-accent); }
+  .note p { margin: 0.3rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+  }
+  th, td {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--color-code-bg); }
+  code {
+    background: var(--color-code-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  ul, ol { padding-left: 1.4rem; }
+  .sources {
+    margin-top: 1.2rem;
+    font-size: 0.88rem;
+    color: var(--color-text-sub);
+    border-top: 1px dashed var(--color-border);
+    padding-top: 0.8rem;
+  }
+  .sources p { margin: 0.2rem 0; }
+  .sources a { color: var(--color-primary); }
+  footer.page-footer {
+    text-align: center;
+    color: var(--color-text-sub);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+  footer.page-footer a { color: var(--color-primary); }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <p class="eyebrow">AWS Certified Solutions Architect - Associate (SAA-C03) 学習テキスト</p>
+  <h1>第2章　弾力性に優れたアーキテクチャの設計（試験比重 26%）</h1>
+</header>
+
+<div class="wrap">
+
+<nav class="toc" aria-label="この章の目次">
+  <h2>この章の目次</h2>
+  <ol>
+    <li><a href="#intro">はじめに：Resiliencyとこの章の範囲</a></li>
+    <li><a href="#sec2-1">2.1　マルチAZ/マルチリージョンによる高可用性設計</a></li>
+    <li><a href="#sec2-2">2.2　疎結合アーキテクチャの設計</a></li>
+    <li><a href="#sec2-3">2.3　コンピュート/コンテナ/サーバーレスとスケーリング</a></li>
+    <li><a href="#sec2-4">2.4　ストレージ・データベースの可用性</a></li>
+    <li><a href="#sec2-5">2.5　バックアップ・DR戦略</a></li>
+    <li><a href="#quiz2">章末問題（5問）</a></li>
+  </ol>
+</nav>
+
+<section class="content" id="intro">
+<h2>はじめに：Resiliencyとこの章の範囲</h2>
+<p>
+SAA-C03試験のDomain 2「Design Resilient Architectures」は出題全体の26%を占め、Domain 1に次ぐ比重を持つ領域です。
+公式試験ガイドでは、この領域は次の2つのタスクステートメントに分かれています。
+</p>
+<ul>
+  <li>Task 2.1: スケーラブルで疎結合なアーキテクチャの設計（API、キューイング、マイクロサービス、コンテナ、サーバーレスなど）</li>
+  <li>Task 2.2: 高可用性・耐障害性アーキテクチャの設計（マルチAZ/マルチリージョン、DR戦略、単一障害点の排除など）</li>
+</ul>
+<p>
+この章で扱う「回復性（Resiliency）」とは、障害が発生してもサービスを継続、あるいは短時間で復旧できる能力を指します。
+AWSではAvailability Zone（AZ、1つ以上の独立したデータセンター群）を複数使うことで単一データセンター障害に備え、
+さらにAWSリージョン（地理的に離れた複数のAZの集合）をまたぐことで、大規模障害や自然災害にも備える、という
+段階的な設計アプローチを取ります。この章では、まずマルチAZ/マルチリージョンの基本パターンを扱い、
+次に疎結合設計、コンピュート層のスケーリング、ストレージ・データベースの可用性、最後にバックアップ・DR戦略を扱います。
+</p>
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - Content Domain 2: Design Resilient Architectures:
+<a href="https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03-domain2.html</a></p>
+</div>
+</section>
+
+<section class="content" id="sec2-1">
+<h2>2.1　マルチAZ/マルチリージョンによる高可用性設計</h2>
+
+<h3>Elastic Load Balancing（ELB）</h3>
+<p>
+ELBは複数のAZにまたがるターゲット（EC2インスタンス、コンテナ、IPアドレスなど）にトラフィックを自動的に分散し、
+ヘルスチェックで異常なターゲットを検知して正常なターゲットのみにルーティングするマネージドサービスです。
+現行世代には次の3種類があります。
+</p>
+<ul>
+  <li><strong>Application Load Balancer（ALB）</strong>：HTTP/HTTPS（レイヤー7）を扱い、パスベース・ホストベースの
+    ルーティングやコンテナ・Lambdaへのルーティングに向く</li>
+  <li><strong>Network Load Balancer（NLB）</strong>：TCP/UDP（レイヤー4）の超低レイテンシー・高スループット処理に向く</li>
+  <li><strong>Gateway Load Balancer（GWLB）</strong>：サードパーティ製のセキュリティアプライアンス（ファイアウォールなど）への
+    透過的なトラフィック挿入に使う</li>
+</ul>
+<p>
+ELBはAWS Certificate Managerの証明書と統合してTLS終端を代行でき、EC2 Auto Scalingと連携すると、
+起動・終了したインスタンスが自動的に登録・登録解除されます。
+</p>
+
+<h3>Amazon EC2 Auto Scaling</h3>
+<p>
+EC2 Auto Scalingは、Auto Scalingグループ単位で最小・最大・希望容量を指定し、需要に応じてインスタンス数を
+自動的に増減させるサービスです。複数のAZを指定すると、グループの拡張時にインスタンスをAZ間で均等に配置し、
+単一AZの障害からアプリケーションを保護します。EC2のヘルスチェック（および任意のカスタムヘルスチェック）によって
+異常なインスタンスを自動検出し、置き換えることで、指定した容量を維持し続けます。
+</p>
+
+<h3>Amazon Route 53のルーティングポリシー</h3>
+<p>
+Route 53はDNSレベルでトラフィックを制御するサービスで、目的に応じて複数のルーティングポリシーを選択できます。
+</p>
+<table>
+  <thead>
+    <tr><th>ルーティングポリシー</th><th>用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>シンプル</td><td>単一リソースへの基本的なルーティング</td></tr>
+    <tr><td>フェイルオーバー</td><td>アクティブ/パッシブ構成でのフェイルオーバーを構成する場合</td></tr>
+    <tr><td>位置情報（Geolocation）</td><td>ユーザーの地理的位置に基づいてルーティングする場合</td></tr>
+    <tr><td>地理的近接性（Geoproximity）</td><td>リソースの位置に基づき、必要に応じてトラフィックの比重を地域間でシフトする場合</td></tr>
+    <tr><td>レイテンシーベース</td><td>複数リージョンのリソースの中から、最もレイテンシーが低いリージョンへルーティングする場合</td></tr>
+    <tr><td>複数値回答</td><td>最大8個の正常なレコードをランダムに返す場合</td></tr>
+    <tr><td>加重</td><td>指定した比率で複数リソースにトラフィックを振り分ける場合（例: カナリアリリース）</td></tr>
+  </tbody>
+</table>
+<p>
+マルチリージョン構成での可用性設計では、フェイルオーバールーティングとヘルスチェックを組み合わせて、
+プライマリリージョンの異常を検知した際に自動的にセカンダリリージョンへ切り替える構成がよく使われます。
+</p>
+
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - 「What is Elastic Load Balancing?」:
+<a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html</a></p>
+<p>AWS公式サイト - 「What is Amazon EC2 Auto Scaling?」:
+<a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html</a></p>
+<p>AWS公式サイト - Amazon Route 53開発者ガイド「Choosing a routing policy」:
+<a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html</a></p>
+</div>
+</section>
+
+<section class="content" id="sec2-2">
+<h2>2.2　疎結合アーキテクチャの設計</h2>
+
+<h3>Amazon SQS・SNS・EventBridgeの使い分け</h3>
+<p>
+疎結合設計では、コンポーネント同士を直接呼び出すのではなく、メッセージングサービスを介して非同期に連携させることで、
+一方の障害や遅延が他方に波及しないようにします。代表的な3つのサービスは役割が異なります。
+</p>
+<ul>
+  <li><strong>Amazon SQS</strong>：メッセージをキューに保持し、通常は単一のコンシューマーが処理する疎結合パターン向け。
+    標準キューは「少なくとも1回の配信」を保証し、メッセージ処理中は可視性タイムアウトの間他のコンシューマーから
+    見えなくなる。処理に失敗し続けるメッセージはデッドレターキューに退避できる</li>
+  <li><strong>Amazon SNS</strong>：パブリッシャーが1つのトピックにメッセージを送信すると、購読している複数のエンドポイント
+    （SQS、Lambda、HTTP、Eメール、SMSなど）へ同時に配信する「ファンアウト」パターンに向く</li>
+  <li><strong>Amazon EventBridge</strong>：AWSサービス・自社アプリケーション・SaaS製品などから発生するイベントを
+    受け取り、ルールに基づいてフィルタリング・変換し、複数のターゲットへ振り分けるサーバーレスのイベントバスサービス。
+    イベント駆動アーキテクチャの中心的な役割を果たす</li>
+</ul>
+<p>
+SQSとSNSを組み合わせる「SNS→複数のSQSキューへのファンアウト」は、1つのイベントを複数の独立した
+マイクロサービスに並行して処理させたい場合の典型パターンです。
+</p>
+
+<h3>API GatewayとStep Functions</h3>
+<p>
+Amazon API Gatewayは、REST APIやWebSocket APIをフルマネージドで公開・管理するサービスで、
+Lambdaやその他のAWSサービス、オンプレミスのHTTPエンドポイントをバックエンドとして統合できます。
+スロットリングやAPIキー管理、認可（IAM、Cognito、Lambdaオーソライザーなど）も提供します。
+</p>
+<p>
+AWS Step Functionsは、複数のLambda関数やAWSサービス呼び出しを、ステートマシン（ワークフロー）として
+順序立てて実行・調整するオーケストレーションサービスです。リトライやエラーハンドリングをワークフロー定義の中で
+宣言的に扱えるため、複雑な非同期処理をマイクロサービス間で疎結合に連携させる際に使われます。
+</p>
+
+<h3>キャッシュ戦略</h3>
+<p>
+疎結合・高スケーラビリティな設計では、頻繁に読み取られるデータをキャッシュすることでバックエンドへの負荷を下げます。
+代表的な手段として、データベースの前段に配置するインメモリキャッシュ（Amazon ElastiCacheなど）や、
+静的・準静的コンテンツをエッジロケーションでキャッシュするAmazon CloudFrontがあります。
+キャッシュ戦略の設計では、データの更新頻度と整合性要件に応じて、キャッシュの有効期限（TTL）や
+キャッシュ無効化の仕組みをあわせて検討する必要があります。
+</p>
+
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - 「What is Amazon Simple Queue Service?」（SQS/SNS/Amazon MQの比較を含む）:
+<a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html</a></p>
+<p>AWS公式サイト - 「What Is Amazon EventBridge?」:
+<a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html</a></p>
+</div>
+</section>
+
+<section class="content" id="sec2-3">
+<h2>2.3　コンピュート/コンテナ/サーバーレスとスケーリング</h2>
+
+<h3>EC2 Auto Scalingのスケーリング手法</h3>
+<p>
+Auto Scalingグループは、起動テンプレートを設定情報として使い、スケーリングポリシーに基づいてインスタンス数を
+調整します。複数のインスタンスタイプやSpot・オンデマンドといった購入オプションを1つのグループ内で組み合わせて
+コストを最適化することもできます。Spotインスタンスの中断が見込まれる場合は、Capacity Rebalancingにより、
+中断リスクが高まったインスタンスを事前に置き換えることも可能です。また、AMIやテンプレートを更新した際の
+インスタンスリフレッシュ（ローリング更新、カナリア方式のテストを含む）や、起動・終了時にカスタム処理を挟む
+ライフサイクルフックもサポートされています。
+</p>
+
+<h3>コンテナオーケストレーション：ECSとEKS</h3>
+<p>
+Amazon ECSは、コンテナ化されたアプリケーションのデプロイ・管理・スケーリングを行うフルマネージドの
+コンテナオーケストレーションサービスです。コンテナを実際に動かす「キャパシティ」の選択肢として、
+自分でEC2インスタンスを管理するEC2起動タイプと、サーバーの管理・容量計画が不要な
+サーバーレスの<strong>AWS Fargate</strong>起動タイプがあります。ECSではタスク定義（アプリケーションの設計図）、
+クラスター（実行基盤）、タスク（実行単位）、サービス（長時間稼働するタスクの集合）という概念でアプリケーションを構成します。
+</p>
+<p>
+Amazon EKSはKubernetesをマネージドで提供するサービスで、Kubernetesの標準APIやエコシステムをそのまま活用したい場合に
+選ばれます。ECSとEKSはどちらもEC2起動タイプ・Fargate起動タイプを選べますが、独自のオーケストレーション方式（ECS）か、
+業界標準のKubernetes（EKS）かという選択が主な違いです。
+</p>
+
+<h3>AWS Lambdaによるサーバーレスコンピューティング</h3>
+<p>
+AWS Lambdaは、サーバーのプロビジョニングや管理を必要としないサーバーレスコンピューティングサービスです。
+API Gateway、S3、SQS、EventBridgeなど200を超えるAWSサービスをトリガーとしてコードを呼び出すことができ、
+各呼び出しは独立した実行環境で処理されます。トラフィックの増減に応じて実行環境の生成・破棄を自動的に行うため、
+利用者側でスケーリングを管理する必要がありません。
+</p>
+
+<h3>CloudFrontによるエッジアクセラレーション</h3>
+<p>
+Amazon CloudFrontは、世界中に分散したエッジロケーションを通じて静的・動的コンテンツを配信するCDN（コンテンツ配信網）です。
+ユーザーからのリクエストは最もレイテンシーの低いエッジロケーションにルーティングされ、コンテンツがまだキャッシュに
+なければオリジン（S3バケットやHTTPサーバーなど）から取得されます。オリジンフェイルオーバーを設定すれば、
+プライマリオリジンへのリクエストが失敗した場合に自動的にセカンダリオリジンへリクエストを振り替えることもできます。
+</p>
+
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - 「What is Amazon EC2 Auto Scaling?」:
+<a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html</a></p>
+<p>AWS公式サイト - 「What is Amazon Elastic Container Service?」:
+<a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html</a></p>
+<p>AWS公式サイト - 「What is AWS Lambda?」:
+<a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/lambda/latest/dg/welcome.html</a></p>
+<p>AWS公式サイト - 「What is Amazon CloudFront?」:
+<a href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html</a></p>
+</div>
+</section>
+
+<section class="content" id="sec2-4">
+<h2>2.4　ストレージ・データベースの可用性</h2>
+
+<h3>Amazon S3の耐久性・可用性</h3>
+<p>
+S3標準ストレージクラス（S3 Standard、S3 Intelligent-Tiering、S3 Standard-IAなど）は、AWSリージョン内の
+最低3つのAZにオブジェクトを冗長的に格納するよう設計されており、1年間で99.999999999%（イレブンナイン）の
+耐久性と99.99%の可用性を実現するよう設計されています。これらのクラスは、AZが1つ丸ごと失われても
+データを維持できるよう設計されています（S3 One Zone-IAのみ単一AZに格納するため、AZ障害時にデータを
+失うリスクがある点に注意が必要です）。さらにS3バージョニングを有効にすると、誤削除や上書きからの復旧が容易になります。
+</p>
+
+<h3>Amazon EFS</h3>
+<p>
+Amazon EFSは、複数のAZ・複数のコンピュートインスタンス（EC2、ECS、EKS、Lambda、Fargateなど）から
+同時にマウントできるサーバーレスのファイルストレージです。リージョナルファイルシステム（推奨）は
+複数の地理的に分離されたAZにデータを冗長的に格納し、1つ以上のAZが利用不能になっても継続的な可用性を提供します。
+単一AZにのみ格納する「One Zoneファイルシステム」も選択できますが、その場合はそのAZの障害でデータを
+失う可能性があります。
+</p>
+
+<h3>Amazon RDSのマルチAZ配置とリードレプリカ</h3>
+<p>
+RDSのマルチAZ配置には、スタンバイが1つの「マルチAZ DBインスタンス配置」と、スタンバイが2つの
+「マルチAZ DBクラスター配置」があります。前者のスタンバイは同期レプリケーションによるフェイルオーバー用途のみで
+読み取りトラフィックは処理しませんが、後者はフェイルオーバー用途に加えて読み取りトラフィックも処理できます。
+</p>
+<p>
+これに対して<strong>リードレプリカ</strong>は、読み取り性能をスケールするための仕組みで、
+非同期レプリケーションによって作成される読み取り専用のコピーです。マルチAZ配置が「同一構成の可用性確保」を
+目的とするのに対し、リードレプリカは「読み取り負荷の分散」を主目的とし、リージョンをまたいで作成することもできます。
+Amazon Auroraでは、Aurora Global Databaseを使うことで、セカンダリリージョンへ通常1秒未満のレイテンシーで
+レプリケーションでき、障害時にはセカンダリリージョンを1分未満で書き込み可能な状態に昇格できます。
+</p>
+
+<h3>Amazon RDS Proxy</h3>
+<p>
+RDS Proxyは、アプリケーションとデータベースの間でコネクションプーリングを行うフルマネージドのプロキシです。
+Lambdaのように多数の短命な接続を大量に生成しがちなサーバーレスアプリケーションから利用すると、
+データベースへの接続数の急増によるオーバーサブスクリプションを防げます。また、プライマリDBインスタンスに障害が
+発生した際は、アプリケーション側の接続を維持したまま自動的にスタンバイDBインスタンスへの接続に切り替えるため、
+フェイルオーバーの影響を受けにくくなります。
+</p>
+
+<h3>Amazon DynamoDBの可用性</h3>
+<p>
+DynamoDBはマネージドのNoSQLデータベースで、データを自動的に複数のAZにレプリケートすることで高い可用性と
+耐久性を実現しています。単一リージョン内での可用性はサービスに組み込まれており、利用者が明示的にマルチAZ配置を
+構成する必要はありません。複数のAWSリージョンにまたがる可用性やDR、低レイテンシーなグローバルアクセスが
+必要な場合は、Global Tables機能を使うことで、複数リージョン間で双方向レプリケーションされたテーブルを構成できます。
+</p>
+
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - Amazon S3ユーザーガイド「Data protection in Amazon S3」（耐久性・可用性の数値を含む）:
+<a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/DataDurability.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/AmazonS3/latest/userguide/DataDurability.html</a></p>
+<p>AWS公式サイト - 「What is Amazon Elastic File System?」:
+<a href="https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html</a></p>
+<p>AWS公式サイト - Amazon RDSユーザーガイド「Configuring and managing a Multi-AZ deployment」:
+<a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html</a></p>
+<p>AWS公式サイト - 「Amazon RDS Proxy」:
+<a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html</a></p>
+<p>AWS公式サイト - Amazon DynamoDB開発者ガイド「Core components of Amazon DynamoDB」:
+<a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html</a></p>
+<p>AWS公式ホワイトペーパー - 「Disaster recovery options in the cloud」（Aurora Global Databaseの昇格時間等を含む）:
+<a href="https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html</a></p>
+</div>
+</section>
+
+<section class="content" id="sec2-5">
+<h2>2.5　バックアップ・DR戦略</h2>
+
+<h3>AWS Backup</h3>
+<p>
+AWS Backupは、EC2/EBS、RDS（Auroraを含む）、DynamoDB、EFS、Storage Gateway、FSxなど複数のAWSサービスにまたがる
+バックアップを一元的に設定・スケジュール・監視できるフルマネージドサービスです。「バックアッププラン」で
+バックアップ頻度や保持期間、コールドストレージへのライフサイクル移行ルールを定義し、タグベースでリソースに
+適用できます。クロスリージョン・クロスアカウントでのバックアップコピーもサポートしており、
+リージョン障害やアカウント侵害に備えたバックアップの分散保管が可能です。バックアップボールトには
+「Vault Lock」機能があり、WORM（Write Once Read Many）モデルでバックアップの削除・変更を防止できます。
+</p>
+
+<h3>DR戦略の4類型とRTO/RPO</h3>
+<p>
+AWSの公式ホワイトペーパーでは、災害復旧（DR）戦略はコストと複雑さが低い順に、次の4つに大別されています。
+RTO（目標復旧時間）はどれだけ早く復旧できるか、RPO（目標復旧時点）はどれだけのデータ損失まで許容できるかを表す指標です。
+</p>
+<table>
+  <thead>
+    <tr><th>戦略</th><th>概要</th><th>RTOの傾向</th><th>コストの傾向</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>バックアップ&リストア</td>
+      <td>データを定期的にバックアップし、障害時にインフラをゼロから再構築して復元する</td>
+      <td>数時間〜</td>
+      <td>最も低い</td>
+    </tr>
+    <tr>
+      <td>パイロットライト</td>
+      <td>データベースなどコア基盤は常時稼働・レプリケーションしておき、アプリケーションサーバーなどは
+        平常時は停止しておいて障害時に起動・スケールする</td>
+      <td>数十分〜</td>
+      <td>低〜中</td>
+    </tr>
+    <tr>
+      <td>ウォームスタンバイ</td>
+      <td>縮小版ではあるが常時稼働している本番相当の環境をセカンダリリージョンに用意し、
+        障害時にスケールアウトして本番容量まで引き上げる</td>
+      <td>数分〜</td>
+      <td>中〜高</td>
+    </tr>
+    <tr>
+      <td>マルチサイトActive/Active</td>
+      <td>複数リージョンで同時に本番トラフィックを処理し、いずれかのリージョン障害時も他のリージョンで
+        処理を継続する</td>
+      <td>ほぼゼロ（データ破損時はゼロではない）</td>
+      <td>最も高い</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+戦略を選ぶ際は、単一データセンター（AZ）レベルの障害であればバックアップ&リストアで十分な場合が多い一方、
+リージョン単位の障害や規制要件がある場合はパイロットライト以上を検討する、という判断基準が示されています。
+フェイルオーバーの実行には、Route 53のヘルスチェックとフェイルオーバールーティング、またはAWS Global Acceleratorの
+エンドポイント切り替えなどが使われます。
+</p>
+
+<h3>AWS X-Rayによる可観測性</h3>
+<p>
+AWS X-Rayは、分散アプリケーションが処理するリクエストに関するデータを収集し、可視化・分析するサービスです。
+リクエストがマイクロサービスやデータベース、外部APIなど複数のコンポーネントをまたいで処理される様子を
+「トレースマップ」として可視化でき、ボトルネックやレイテンシーの急増箇所を特定するのに役立ちます。
+可用性設計においては、単一障害点や遅延の原因となっているコンポーネントを特定するための観測手段として位置づけられます。
+</p>
+
+<div class="sources">
+<p>参照した情報源：</p>
+<p>AWS公式サイト - 「What is AWS Backup?」:
+<a href="https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html</a></p>
+<p>AWS公式ホワイトペーパー - 「Disaster recovery options in the cloud」（4類型・RTO/RPOの考え方）:
+<a href="https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html</a></p>
+<p>AWS公式サイト - 「What is AWS X-Ray?」:
+<a href="https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html</a></p>
+</div>
+</section>
+
+<section class="content" id="quiz2">
+<h2>章末問題（5問）</h2>
+
+<div class="note">
+<p>各設問は4択の単一選択式です。解答を考えてから、折りたたみ内の解説を確認してください。</p>
+</div>
+
+<h3>問1</h3>
+<p>
+あるWebアプリケーションで、複数リージョンにデプロイした環境のうち、最もレイテンシーが低いリージョンへ
+ユーザーを振り分けたいと考えています。最も適したRoute 53のルーティングポリシーはどれですか。
+</p>
+<ol type="A">
+  <li>シンプルルーティング</li>
+  <li>加重ルーティング</li>
+  <li>レイテンシーベースルーティング</li>
+  <li>複数値回答ルーティング</li>
+</ol>
+<div class="note">
+<p><strong>解答: C</strong></p>
+<p>レイテンシーベースルーティングは、複数リージョンに配置されたリソースの中から、ユーザーにとって最もレイテンシーが
+低いリージョンへトラフィックを振り分けるためのポリシーです。加重ルーティングは指定した比率での振り分け、
+複数値回答はランダムな複数レコードの返却に使われ、いずれもレイテンシー最適化を目的としたものではありません。</p>
+</div>
+
+<h3>問2</h3>
+<p>
+注文処理システムで、1件の注文イベントを「在庫更新」「請求処理」「配送手配」という3つの独立したマイクロサービスに
+同時に配信し、それぞれが非同期に処理を行えるようにしたいと考えています。最も適したAWSサービスの組み合わせはどれですか。
+</p>
+<ol type="A">
+  <li>Amazon SQS標準キューを1つだけ使い、3つのサービスが同じキューをポーリングする</li>
+  <li>Amazon SNSトピックに注文イベントを発行し、3つのSQSキューをそれぞれサブスクライブさせるファンアウト構成にする</li>
+  <li>3つのマイクロサービスを直接同期的なHTTP呼び出しでチェーンする</li>
+  <li>Amazon RDSのテーブルにポーリング用のフラグ列を追加し、各サービスが定期的に参照する</li>
+</ol>
+<div class="note">
+<p><strong>解答: B</strong></p>
+<p>SNSトピックに発行したメッセージを複数のSQSキューにファンアウトする構成は、1つのイベントを複数の独立した
+コンシューマーに同時配信する典型的な疎結合パターンです。単一のSQSキューを複数サービスで共有すると、
+1件のメッセージは通常いずれか1つのコンシューマーにしか処理されないため要件を満たしません。</p>
+</div>
+
+<h3>問3</h3>
+<p>
+Lambda関数からRDS for MySQLへの接続数が急増し、データベース側の最大接続数に達してエラーが発生するようになりました。
+アプリケーションコードの大幅な変更を避けつつ、この問題を軽減する最も適切な方法はどれですか。
+</p>
+<ol type="A">
+  <li>RDSインスタンスをマルチAZ配置に変更する</li>
+  <li>RDS Proxyを導入し、Lambdaからの接続をコネクションプール経由にする</li>
+  <li>DynamoDBに移行する</li>
+  <li>Route 53のレイテンシーベースルーティングを設定する</li>
+</ol>
+<div class="note">
+<p><strong>解答: B</strong></p>
+<p>RDS Proxyはコネクションプーリングを行い、多数の短命な接続を生成しがちなLambdaのようなサーバーレス環境からの
+接続を効率的に再利用します。これによりデータベース側の接続数オーバーサブスクリプションを緩和できます。
+マルチAZ配置は可用性の向上が目的であり、接続数の問題そのものは解決しません。</p>
+</div>
+
+<h3>問4</h3>
+<p>
+規制要件により、災害の定義がリージョン単位の障害にまで及ぶ企業が、コストを抑えつつコアデータベースは
+常時レプリケーションしておき、アプリケーションサーバーは平常時は起動せず障害時のみ起動・スケールする
+DR戦略を採用したいと考えています。最も適切な戦略はどれですか。
+</p>
+<ol type="A">
+  <li>バックアップ&リストア</li>
+  <li>パイロットライト</li>
+  <li>ウォームスタンバイ</li>
+  <li>マルチサイトActive/Active</li>
+</ol>
+<div class="note">
+<p><strong>解答: B</strong></p>
+<p>パイロットライトは、データベースなどのコア基盤を常時稼働・レプリケーションしておきつつ、
+アプリケーションサーバーなど他の要素は平常時「switched off」にしておき、障害時に起動・スケールする戦略です。
+バックアップ&リストアより復旧が速く、ウォームスタンバイほどのコストはかからない中間的な選択肢です。</p>
+</div>
+
+<h3>問5</h3>
+<p>
+S3標準ストレージクラスに保存したオブジェクトの耐久性設計に関する記述として、正しいものはどれですか。
+</p>
+<ol type="A">
+  <li>単一のAZにのみ保存され、AZ障害時にはデータが失われる可能性がある</li>
+  <li>最低3つのAZにまたがって冗長的に保存されるよう設計されており、AZが1つ丸ごと失われてもデータを維持できるよう設計されている</li>
+  <li>耐久性は保証されておらず、利用者が独自にレプリケーションを構成する必要がある</li>
+  <li>バージョニングを有効にしないと複数AZへの保存は行われない</li>
+</ol>
+<div class="note">
+<p><strong>解答: B</strong></p>
+<p>S3標準（S3 Standard）などの主要ストレージクラスは、リージョン内の最低3つのAZに複数デバイスにわたって
+冗長的にオブジェクトを保存するよう設計されており、99.999999999%の耐久性を実現するよう設計されています。
+これはバージョニングの有効・無効に関わらないデフォルトの冗長化の仕組みです。単一AZにのみ保存されるのは
+S3 One Zone-IAストレージクラスの特性です。</p>
+</div>
+
+<div class="sources">
+<p>問題は本節および2.1〜2.5節で参照した公式情報源（Route53/SQS・SNS/RDS Proxy/DR whitepaper/S3の各ドキュメント）の内容に基づき作成。</p>
+</div>
+</section>
+
+<footer class="page-footer">
+  <p><a href="index.html">目次に戻る</a>　|　<a href="domain1.html">第1章へ戻る</a></p>
+</footer>
+
+</div>
+</body>
+</html>

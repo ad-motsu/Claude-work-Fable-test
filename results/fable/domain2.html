@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2章 弾力性に優れたアーキテクチャの設計 | SAA-C03 学習テキスト</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#161d2e; --panel2:#1c2740; --ink:#e8ecf4; --muted:#9aa6bd;
+    --line:#2a3550; --accent:#4f9cff; --accent2:#37d0a0; --warn:#ffb454; --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.85;font-size:16px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 100px}
+  header.top{padding:48px 20px 36px;background:linear-gradient(160deg,#18342b,#0f1420);border-bottom:1px solid var(--line)}
+  header.top .wrap{padding-bottom:0}
+  .kicker{color:var(--accent2);font-weight:700;letter-spacing:.08em;font-size:.82rem;margin:0 0 8px}
+  h1{font-size:1.9rem;line-height:1.4;margin:0 0 10px}
+  .lead{color:var(--muted);margin:6px 0 0;font-size:1rem}
+  .weight{display:inline-block;margin-top:16px;padding:6px 14px;border:1px solid var(--accent2);
+    border-radius:999px;color:var(--accent2);font-weight:700;font-size:.85rem}
+  nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:28px 0}
+  nav.toc b{display:block;color:var(--muted);font-size:.8rem;letter-spacing:.05em;margin-bottom:8px}
+  nav.toc a{color:var(--ink);text-decoration:none;display:block;padding:4px 0;border-bottom:1px dashed transparent}
+  nav.toc a:hover{color:var(--accent2)}
+  section{margin:46px 0}
+  h2{font-size:1.5rem;margin:0 0 6px;padding-top:14px;border-top:2px solid var(--accent2);display:inline-block}
+  .task{color:var(--accent);font-size:.85rem;font-weight:700;margin:2px 0 18px}
+  h3{font-size:1.2rem;margin:34px 0 10px;color:#fff}
+  h4{font-size:1.02rem;margin:22px 0 8px;color:var(--accent2)}
+  p{margin:12px 0}
+  ul,ol{margin:12px 0;padding-left:1.4em}
+  li{margin:6px 0}
+  strong{color:#fff}
+  code{background:#0b1020;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SFMono-Regular",Menlo,Consolas,monospace;color:#9fd0ff}
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.94rem;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:var(--panel2);color:#fff;white-space:nowrap}
+  tr:nth-child(even){background:#131b2c}
+  .callout{border-left:4px solid var(--accent2);background:var(--panel);border-radius:0 10px 10px 0;
+    padding:14px 18px;margin:18px 0}
+  .callout.tip{border-color:var(--accent2)}
+  .callout.warn{border-color:var(--warn)}
+  .callout.note{border-color:var(--accent)}
+  .callout .cap{font-weight:700;font-size:.82rem;letter-spacing:.04em;margin-bottom:4px}
+  .callout.tip .cap{color:var(--accent2)}
+  .callout.warn .cap{color:var(--warn)}
+  .callout.note .cap{color:var(--accent)}
+  .sources{margin:22px 0 0;background:#0b1020;border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+  .sources .cap{color:var(--muted);font-size:.78rem;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+  .sources ul{margin:4px 0;padding-left:1.2em}
+  .sources li{font-size:.86rem;word-break:break-all;color:var(--muted)}
+  .sources a{color:#7fb6ff;text-decoration:none}
+  .sources a:hover{text-decoration:underline}
+  .quiz{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:22px 0}
+  .q{font-weight:700;color:#fff;margin:0 0 12px}
+  .choices{list-style:none;padding:0;margin:0 0 6px}
+  .choices li{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 14px;margin:7px 0}
+  details.ans{margin-top:12px;background:#0b1020;border:1px solid var(--line);border-radius:8px;padding:4px 14px}
+  details.ans summary{cursor:pointer;color:var(--accent2);font-weight:700;padding:8px 0}
+  details.ans .body{padding:4px 0 12px}
+  .badge{display:inline-block;background:var(--accent2);color:#04150f;font-weight:800;border-radius:6px;
+    padding:2px 10px;font-size:.82rem;margin-right:8px}
+  footer.pager{display:flex;justify-content:space-between;gap:12px;margin-top:60px;
+    border-top:1px solid var(--line);padding-top:24px}
+  footer.pager a{color:var(--accent2);text-decoration:none;font-weight:600}
+  @media(max-width:600px){h1{font-size:1.5rem}h2{font-size:1.3rem}body{font-size:15px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">AWS 認定ソリューションアーキテクト – アソシエイト（SAA-C03）</p>
+    <h1>第2章　弾力性に優れたアーキテクチャの設計</h1>
+    <p class="lead">Domain 2: Design Resilient Architectures ／ 対象読者: クラウド実務1年程度のエンジニア</p>
+    <span class="weight">試験比重 26%（全4ドメイン中で第2位）</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <b>この章の構成</b>
+  <a href="#intro">はじめに — 「弾力性」と「可用性」の違い</a>
+  <a href="#s21">2.1　スケーラブルで疎結合なアーキテクチャ（Task 2.1）</a>
+  <a href="#s22">2.2　高可用・耐障害アーキテクチャ（Task 2.2）</a>
+  <a href="#s23">2.3　バックアップとディザスタリカバリ（DR）</a>
+  <a href="#quiz">章末問題（5問・4択・解説つき）</a>
+</nav>
+
+<section id="intro">
+  <h2>はじめに</h2>
+  <p class="task">Domain 2 は採点対象の <strong>26%</strong> を占め、Domain 1 に次ぐ配点です。</p>
+  <p>このドメインのキーワードは <strong>Resilient（弾力性・回復力）</strong>です。単に「壊れないシステム」ではなく、<strong>コンポーネントが壊れることを前提に、それでもサービスを継続できる／自動で立ち直れる設計</strong>を問います。混同しやすい2つの概念を最初に整理します。</p>
+  <table>
+    <tr><th>概念</th><th>意味</th><th>実現手段の例</th></tr>
+    <tr><td><strong>高可用性（HA）</strong></td><td>障害が起きても<strong>短いダウンタイムで</strong>サービスを継続できる</td><td>マルチAZ、ロードバランサ、Auto Scaling、フェイルオーバー</td></tr>
+    <tr><td><strong>耐障害性（Fault Tolerance）</strong></td><td>コンポーネント障害時も<strong>ダウンタイムなく</strong>動き続ける</td><td>冗長化＋自動復旧、複数AZ/リージョンへの多重化</td></tr>
+    <tr><td><strong>スケーラビリティ</strong></td><td>負荷の増減に応じて<strong>容量を伸縮</strong>できる</td><td>水平スケール（Auto Scaling）、疎結合（SQS等）</td></tr>
+    <tr><td><strong>疎結合（Loose Coupling）</strong></td><td>コンポーネント間の依存を弱め、一部の障害を全体に波及させない</td><td>キュー（SQS）、通知（SNS）、イベント（EventBridge）</td></tr>
+  </table>
+  <div class="callout note">
+    <div class="cap">前提知識：AWS グローバルインフラの階層</div>
+    <p><strong>リージョン</strong>は地理的に離れた独立エリア（例：東京、大阪）。各リージョンは複数の<strong>アベイラビリティゾーン（AZ）</strong>で構成され、AZ同士は物理的に分離されつつ低遅延の専用線で結ばれています。可用性設計の基本は「<strong>複数AZにまたがって冗長化する（Multi-AZ）</strong>」こと。1つのAZが丸ごと落ちても別のAZで受け続けられます。さらに広域災害に備えるならリージョンをまたぎます。</p>
+  </div>
+  <div class="sources">
+    <div class="cap">情報源</div>
+    <ul>
+      <li>SAA-C03 試験ガイド（Version 1.1）: <a href="https://d1.awsstatic.com/training-and-certification/docs-sa-assoc/AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf">d1.awsstatic.com/.../AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf</a></li>
+      <li>AWS グローバルインフラストラクチャ（リージョンとAZ）: <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html">docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html</a></li>
+      <li>信頼性の柱（Well-Architected）: <a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html">docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="s21">
+  <h2>2.1　スケーラブルで疎結合なアーキテクチャ</h2>
+  <p class="task">Task Statement 2.1: Design scalable and loosely coupled architectures.</p>
+
+  <h3>スケーリングの2方向</h3>
+  <ul>
+    <li><strong>垂直スケール（スケールアップ）</strong>: 1台のスペックを上げる。単純だが上限があり、変更時に停止・再起動を伴いやすく、単一障害点も残る</li>
+    <li><strong>水平スケール（スケールアウト）</strong>: 台数を増やす。クラウドの基本。負荷分散と組み合わせ、弾力性・可用性の両方に効く</li>
+  </ul>
+  <p>試験では原則として<strong>水平スケール＋疎結合</strong>が「クラウドらしい正解」の方向です。</p>
+
+  <h3>Elastic Load Balancing（ELB）：4種類の使い分け</h3>
+  <p>ロードバランサは複数ターゲットにトラフィックを分散し、異常なターゲットを<strong>ヘルスチェック</strong>で切り離します。SAAでは種類の選択が頻出です。</p>
+  <table>
+    <tr><th>種類</th><th>レイヤー</th><th>主な用途・特徴</th></tr>
+    <tr><td><strong>ALB</strong>（Application）</td><td>L7（HTTP/HTTPS）</td><td>パスやホスト名によるルーティング、コンテナ/マイクロサービス、WAF連携。Webアプリの定番</td></tr>
+    <tr><td><strong>NLB</strong>（Network）</td><td>L4（TCP/UDP/TLS）</td><td>超低遅延・超高スループット、静的IP/Elastic IP、極端な同時接続数。TCPレベルの負荷分散</td></tr>
+    <tr><td><strong>GWLB</strong>（Gateway）</td><td>L3/L4</td><td>ファイアウォール等のサードパーティ仮想アプライアンスを透過的に挿入</td></tr>
+    <tr><td><strong>CLB</strong>（Classic）</td><td>L4/L7</td><td>旧世代。新規設計では非推奨（ALB/NLBを選ぶ）</td></tr>
+  </table>
+  <div class="callout tip">
+    <div class="cap">判断のコツ</div>
+    <p>「HTTPのパスで <code>/api</code> と <code>/img</code> を別ターゲットに振り分けたい」→ <strong>ALB</strong>。「TCPで固定IPと極低遅延が要る」「毎秒数百万接続」→ <strong>NLB</strong>。まず L7 か L4 かで切り分けます。</p>
+  </div>
+
+  <h3>Amazon EC2 Auto Scaling</h3>
+  <p>Auto Scaling グループ（ASG）は、需要に応じてEC2台数を自動で増減させます。可用性の観点でも重要で、<strong>複数AZにまたがって</strong>インスタンスを分散配置し、異常なインスタンスを終了して健全なものを自動起動します。</p>
+  <ul>
+    <li><strong>希望/最小/最大キャパシティ</strong>で台数の範囲を定義</li>
+    <li>スケーリングポリシー：<strong>ターゲット追跡</strong>（例：平均CPU 50%を維持）、ステップ、スケジュール、予測スケーリング</li>
+    <li>ELBのヘルスチェックと連携し、異常インスタンスを置き換える（自己修復）</li>
+  </ul>
+  <p><strong>ALB ＋ Auto Scaling ＋ マルチAZ</strong>は、スケーラブルかつ高可用なWeb層の王道パターンです。</p>
+
+  <h3>疎結合：SQS / SNS / EventBridge</h3>
+  <p>コンポーネントを直接呼び合わせると、片方の障害や過負荷がもう片方に波及します。間にメッセージング層を挟んで<strong>疎結合</strong>にするのがレジリエンス設計の核心です。</p>
+  <table>
+    <tr><th>サービス</th><th>モデル</th><th>使いどころ</th></tr>
+    <tr><td><strong>Amazon SQS</strong></td><td>キュー（1対1、ポーリング型）</td><td>処理を非同期化しバッファリング。生産者と消費者を切り離し、急なスパイクを吸収。消費側をASGでスケール</td></tr>
+    <tr><td><strong>Amazon SNS</strong></td><td>Pub/Sub（1対多、プッシュ型）</td><td>1つのイベントを複数の購読者へ同時配信（ファンアウト）</td></tr>
+    <tr><td><strong>Amazon EventBridge</strong></td><td>イベントバス（ルーティング）</td><td>多数のAWSサービス/SaaSのイベントをルールで振り分け。イベント駆動アーキテクチャの中核</td></tr>
+  </table>
+  <div class="callout note">
+    <div class="cap">SQSの2タイプと信頼性の仕掛け</div>
+    <p><strong>標準キュー</strong>はほぼ無制限のスループットで「少なくとも1回配信（順序はベストエフォート、稀に重複）」、<strong>FIFOキュー</strong>は「厳密な順序・重複排除」。処理に失敗し続けるメッセージは<strong>デッドレターキュー（DLQ）</strong>に隔離して、詰まりや無限リトライを防ぎます。SQS＋Auto Scaling（キューの深さに応じて消費者を増減）は疎結合スケーリングの定番です。</p>
+  </div>
+
+  <h3>サーバーレスとコンテナによる弾力性</h3>
+  <ul>
+    <li><strong>AWS Lambda</strong>: サーバー管理なしでコードを実行。リクエストに応じて自動でスケールし、アイドル時のコストがない。イベント駆動の中心</li>
+    <li><strong>AWS Fargate</strong>: ECS/EKSのサーバーレス実行基盤。EC2の管理なしでコンテナを動かす</li>
+    <li><strong>ECS / EKS</strong>: コンテナのオーケストレーション。ECSはAWSネイティブでシンプル、EKSはKubernetes互換</li>
+    <li><strong>API Gateway</strong>: フルマネージドなAPIフロント。スロットリング（流量制御）でバックエンドを保護</li>
+    <li><strong>AWS Step Functions</strong>: 複数の処理をステートマシンとして編成し、リトライ・エラーハンドリングを宣言的に組む</li>
+  </ul>
+
+  <div class="sources">
+    <div class="cap">情報源（2.1）</div>
+    <ul>
+      <li>Elastic Load Balancing とは: <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html">docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html</a></li>
+      <li>Amazon EC2 Auto Scaling とは: <a href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html">docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html</a></li>
+      <li>Amazon SQS とは: <a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html">docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html</a></li>
+      <li>Amazon SNS とは: <a href="https://docs.aws.amazon.com/sns/latest/dg/welcome.html">docs.aws.amazon.com/sns/latest/dg/welcome.html</a></li>
+      <li>Amazon EventBridge とは: <a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html">docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html</a></li>
+      <li>AWS Lambda とは: <a href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html">docs.aws.amazon.com/lambda/latest/dg/welcome.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="s22">
+  <h2>2.2　高可用・耐障害アーキテクチャ</h2>
+  <p class="task">Task Statement 2.2: Design highly available and/or fault-tolerant architectures.</p>
+
+  <h3>Route 53：DNSによる可用性設計</h3>
+  <p>Amazon Route 53 は権威DNSであり、<strong>ルーティングポリシー</strong>と<strong>ヘルスチェック</strong>を組み合わせて可用性に貢献します。</p>
+  <table>
+    <tr><th>ルーティングポリシー</th><th>用途</th></tr>
+    <tr><td><strong>フェイルオーバー</strong></td><td>プライマリが不健全になったらセカンダリ（DRサイト等）へ自動切替。アクティブ/パッシブDRの要</td></tr>
+    <tr><td><strong>レイテンシーベース</strong></td><td>最も低遅延のリージョンへ誘導</td></tr>
+    <tr><td><strong>加重（Weighted）</strong></td><td>重み付けで割合分散。カナリアリリース等</td></tr>
+    <tr><td><strong>位置情報 / 地理的近接</strong></td><td>ユーザーの地理的位置に基づく振り分け</td></tr>
+    <tr><td><strong>複数値回答</strong></td><td>健全な複数エンドポイントを返し簡易的に分散</td></tr>
+  </table>
+
+  <h3>コンピュート層の高可用パターン</h3>
+  <ul>
+    <li><strong>単一障害点（SPOF）の排除</strong>: 1台構成・1AZ構成をやめ、複数AZに冗長化する</li>
+    <li><strong>ALB + ASG + マルチAZ</strong>: Web/アプリ層の標準。AZ障害時も残るAZで継続</li>
+    <li><strong>NATゲートウェイの冗長化</strong>: 各AZにNATゲートウェイを置き、片方のAZ障害でアウトバウンドが全断しないようにする</li>
+    <li><strong>ステートレス設計</strong>: セッション情報はインスタンス外（ElastiCache/DynamoDB）に持たせ、どのインスタンスが落ちても影響しないようにする</li>
+  </ul>
+
+  <h3>データベースの可用性：Multi-AZ とリードレプリカ</h3>
+  <div class="callout warn">
+    <div class="cap">最頻出の区別：Multi-AZ ≠ リードレプリカ</div>
+    <p>この2つは目的が違います。混同すると設問を落とします。</p>
+  </div>
+  <table>
+    <tr><th>機能</th><th>目的</th><th>挙動</th></tr>
+    <tr><td><strong>RDS Multi-AZ</strong></td><td><strong>可用性（HA/DR）</strong></td><td>別AZに同期レプリケーションのスタンバイを保持。障害時に自動フェイルオーバー。スタンバイは<strong>読み取りには使えない</strong>（待機専用）</td></tr>
+    <tr><td><strong>リードレプリカ</strong></td><td><strong>読み取りのスケール（性能）</strong></td><td>非同期レプリケーション。読み取りクエリを分散。別リージョンにも作成可。それ自体は自動フェイルオーバーの仕組みではない</td></tr>
+  </table>
+  <p>「読み取り負荷が高くて遅い」→ リードレプリカ。「AZ障害でもDBを継続させたい」→ Multi-AZ。「両方」なら併用します。</p>
+
+  <h4>Amazon Aurora</h4>
+  <ul>
+    <li>ストレージが<strong>3つのAZに各2つ、計6コピー</strong>複製され、高い耐久性を持つ</li>
+    <li>読み取り用の<strong>Auroraレプリカ</strong>を最大15台まで追加でき、プライマリ障害時は自動昇格でフェイルオーバー</li>
+    <li><strong>Aurora Global Database</strong>で複数リージョンに低遅延複製し、リージョン規模の障害に備える</li>
+  </ul>
+
+  <h4>Amazon DynamoDB</h4>
+  <ul>
+    <li>フルマネージドなNoSQL。データは<strong>単一リージョン内で自動的に複数AZへ複製</strong>され、標準で高可用</li>
+    <li><strong>グローバルテーブル</strong>で複数リージョンにアクティブ/アクティブ複製し、マルチリージョンの可用性を実現</li>
+    <li><strong>ポイントインタイムリカバリ（PITR）</strong>で直近35日間の任意時点に復元可能</li>
+  </ul>
+
+  <h3>ストレージの可用性・耐久性</h3>
+  <table>
+    <tr><th>サービス</th><th>可用性・耐久性の特徴</th></tr>
+    <tr><td><strong>Amazon S3</strong></td><td>オブジェクトを<strong>複数AZに冗長格納</strong>し、標準クラスで <strong>99.999999999%（イレブンナイン）の耐久性</strong>を設計目標とする。バージョニングで誤削除・上書きから保護。クロスリージョンレプリケーション（CRR）で地理冗長</td></tr>
+    <tr><td><strong>Amazon EFS</strong></td><td>複数AZに分散する共有ファイルストレージ。複数のEC2/AZから同時マウントでき、それ自体がリージョン内で冗長</td></tr>
+    <tr><td><strong>Amazon EBS</strong></td><td>ブロックストレージ。<strong>単一AZ内</strong>で自動複製される（AZをまたがない）。可用性はスナップショット（S3保管）＋別AZでの復元で担保</td></tr>
+    <tr><td><strong>Amazon FSx</strong></td><td>Windows/Lustre等のマネージドファイル。Multi-AZ構成が可能</td></tr>
+  </table>
+  <div class="callout tip">
+    <div class="cap">判断のコツ</div>
+    <p>「複数AZのEC2から共有ファイルシステムを同時に読み書きしたい」→ EBS（単一AZ・単一アタッチが基本）ではなく <strong>EFS</strong>。EBSは1つのAZに紐づく点が可用性設計の落とし穴になりやすいです。</p>
+  </div>
+
+  <div class="sources">
+    <div class="cap">情報源（2.2）</div>
+    <ul>
+      <li>Amazon Route 53 ルーティングポリシー: <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html">docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html</a></li>
+      <li>RDS マルチAZ配置: <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html">docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html</a></li>
+      <li>RDS リードレプリカ: <a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html">docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html</a></li>
+      <li>Amazon Aurora の仕組み: <a href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html">docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html</a></li>
+      <li>DynamoDB グローバルテーブル: <a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html">docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html</a></li>
+      <li>Amazon S3 のストレージクラス（耐久性・可用性）: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html">docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html</a></li>
+      <li>Amazon EFS とは: <a href="https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html">docs.aws.amazon.com/efs/latest/ug/whatisefs.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="s23">
+  <h2>2.3　バックアップとディザスタリカバリ（DR）</h2>
+  <p class="task">Task Statement 2.2 の一部：DR戦略・RTO/RPO・データ耐久性。</p>
+
+  <h3>RTO と RPO — DR設計の2つの物差し</h3>
+  <table>
+    <tr><th>指標</th><th>意味</th><th>覚え方</th></tr>
+    <tr><td><strong>RTO</strong>（Recovery Time Objective）</td><td>障害発生から<strong>復旧までの目標時間</strong>。「どれだけ早く戻すか」</td><td>Time＝ダウンタイムの許容量</td></tr>
+    <tr><td><strong>RPO</strong>（Recovery Point Objective）</td><td>復旧時に<strong>許容できるデータ損失量</strong>を時間で表す。「どこまでのデータ喪失を許すか」</td><td>Point＝直近バックアップからの巻き戻り幅</td></tr>
+  </table>
+  <p>RTO/RPOを小さくするほど可用性は上がりますが、コストも上がります。要件とコストの<strong>バランス</strong>でDR戦略を選ぶ、という判断が問われます。</p>
+
+  <h3>4つのDR戦略（AWS公式の分類）</h3>
+  <p>左ほど低コスト・遅い復旧、右ほど高コスト・速い復旧です。RTO/RPOの厳しさとコストのトレードオフで選びます。</p>
+  <table>
+    <tr><th>戦略</th><th>概要</th><th>RTO/RPO</th><th>コスト</th></tr>
+    <tr><td><strong>バックアップ＆リストア</strong></td><td>データを別リージョンにバックアップ。被災時に復元・再構築</td><td>時間〜（最も遅い）</td><td>最小</td></tr>
+    <tr><td><strong>パイロットライト</strong></td><td>DB等の中核だけを最小構成で常時稼働させ、残りは被災時に起動・拡張</td><td>数十分〜数時間</td><td>低〜中</td></tr>
+    <tr><td><strong>ウォームスタンバイ</strong></td><td>全構成を<strong>縮小規模で常時稼働</strong>。被災時にスケールアップして本番切替</td><td>分単位</td><td>中〜高</td></tr>
+    <tr><td><strong>マルチサイト（アクティブ/アクティブ）</strong></td><td>複数リージョンで<strong>フル稼働</strong>。被災時もほぼ無停止</td><td>ほぼゼロ</td><td>最大</td></tr>
+  </table>
+  <div class="callout tip">
+    <div class="cap">判断のコツ</div>
+    <p>設問はたいてい「RTO/RPOの要件」と「コスト制約」をセットで示します。<strong>「数分のRTO/RPOだがコストは抑えたい」→ ウォームスタンバイ</strong>、<strong>「ダウンタイムゼロが絶対」→ マルチサイト</strong>、<strong>「復旧に多少時間がかかってよく、とにかく安く」→ バックアップ＆リストア</strong>、というように両軸で絞り込みます。</p>
+  </div>
+
+  <h3>AWS Backup による一元管理</h3>
+  <ul>
+    <li><strong>AWS Backup</strong>は、EBS・RDS・Aurora・DynamoDB・EFS・S3・Storage Gateway など多数のサービスのバックアップを<strong>一元的にポリシー管理</strong>できるマネージドサービス</li>
+    <li><strong>バックアッププラン</strong>でスケジュール・保持期間・<strong>別リージョン/別アカウントへのコピー</strong>を定義できる（DR要件に直結）</li>
+    <li><strong>Backup Vault Lock</strong>でバックアップの改ざん・早期削除を防ぎ（WORM）、ランサムウェアやコンプライアンス要件に対応</li>
+  </ul>
+
+  <h3>データ耐久性を支える機能（まとめ）</h3>
+  <ul>
+    <li><strong>S3 バージョニング＋ライフサイクル</strong>: 誤削除からの保護と、古いバージョンの低コスト移行・失効</li>
+    <li><strong>S3 クロスリージョンレプリケーション（CRR）</strong>: 地理的に離れたリージョンへ自動複製</li>
+    <li><strong>RDS 自動バックアップ／スナップショット</strong>: PITR（ポイントインタイムリカバリ）と手動スナップショット</li>
+    <li><strong>DynamoDB PITR</strong>: 直近35日の任意時点へ復元</li>
+  </ul>
+
+  <div class="sources">
+    <div class="cap">情報源（2.3）</div>
+    <ul>
+      <li>AWS のディザスタリカバリ戦略（Disaster Recovery of Workloads on AWS）: <a href="https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html">docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html</a></li>
+      <li>AWS Backup とは: <a href="https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html">docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html</a></li>
+      <li>信頼性の柱 — バックアップの計画: <a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html">docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html</a></li>
+      <li>Amazon S3 レプリケーション: <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html">docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html</a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="quiz">
+  <h2>章末問題</h2>
+  <p class="task">4択・全5問。まず自分で選んでから「解答と解説」を開いてください。</p>
+
+  <div class="quiz">
+    <p class="q">問1. あるWebアプリのRDS（MySQL）で、参照系クエリの急増によりレスポンスが悪化している。書き込み負荷は問題ない。可用性は現状維持で構わない。最も適切な対策はどれか。</p>
+    <ul class="choices">
+      <li>A. RDSをMulti-AZ配置に変更する</li>
+      <li>B. リードレプリカを追加し、読み取りクエリを振り分ける</li>
+      <li>C. インスタンスを毎晩再起動する</li>
+      <li>D. スタンバイインスタンスに読み取りを向ける</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>読み取りのスケールにはリードレプリカが適切です。Multi-AZ（A）は可用性のための機能で、<strong>スタンバイは読み取りに使えず</strong>性能問題は解決しません（Dも同じ理由で誤り）。再起動（C）は無関係です。「読み取り性能＝リードレプリカ／可用性＝Multi-AZ」の区別が要点です。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問2. 注文処理システムで、フロントの受付は高速に応答しつつ、バックエンドの在庫処理が急なアクセス増でも取りこぼさないようにしたい。コンポーネントを疎結合にする最適な構成はどれか。</p>
+    <ul class="choices">
+      <li>A. フロントからバックエンドを同期的に直接呼び出す</li>
+      <li>B. フロントとバックエンドの間にSQSキューを挟み、消費側をAuto Scalingする</li>
+      <li>C. バックエンドのインスタンスを1台の高性能機に置き換える</li>
+      <li>D. Route 53のフェイルオーバールーティングを設定する</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>SQSを挟むと、フロントはメッセージを投入して即応答でき、スパイクはキューが吸収します。消費側はキューの深さに応じてAuto Scalingし、取りこぼしを防げます。直接同期呼び出し（A）は片方の遅延・障害が波及します。垂直スケール1台（C）は単一障害点かつ上限があります。フェイルオーバー（D）は疎結合やバッファリングとは別の目的です。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問3. 複数AZに分散配置したEC2群から、同一のファイル群を同時に読み書きする共有ストレージが必要。可用性を保ちつつ実現するのに最適なサービスはどれか。</p>
+    <ul class="choices">
+      <li>A. 1つのEBSボリュームを全インスタンスにアタッチする</li>
+      <li>B. Amazon EFS を各AZのインスタンスからマウントする</li>
+      <li>C. 各インスタンスのインスタンスストアを使う</li>
+      <li>D. インスタンスごとに独立したEBSを持たせる</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>EFSは複数AZに分散する共有ファイルシステムで、複数AZのEC2から同時マウントできます。EBSは<strong>単一AZに紐づく</strong>ブロックストレージで、AZをまたぐ共有には向きません（A・D）。インスタンスストア（C）は揮発性でインスタンス停止時に消えます。「複数AZ共有＝EFS」が定石です。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問4. ある企業のDR要件は「RTO・RPOともに数分以内。ただし平常時のコストはできるだけ抑えたい」。別リージョンでのDR戦略として最も適切なものはどれか。</p>
+    <ul class="choices">
+      <li>A. バックアップ＆リストア</li>
+      <li>B. パイロットライト</li>
+      <li>C. ウォームスタンバイ</li>
+      <li>D. マルチサイト（アクティブ/アクティブ）でフル稼働</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 C</span></p>
+      <p>ウォームスタンバイは全構成を<strong>縮小規模で常時稼働</strong>させ、被災時にスケールアップして切り替えるため、分単位のRTO/RPOを、マルチサイトより低いコストで実現できます。バックアップ＆リストア（A）とパイロットライト（B）は復旧に時間がかかり数分のRTOを満たしにくい。マルチサイト（D）は要件を満たしますが「コストを抑えたい」条件に反し、過剰です。RTO/RPOとコストの両軸で選ぶのがポイントです。</p>
+    </div></details>
+  </div>
+
+  <div class="quiz">
+    <p class="q">問5. EBS・RDS・DynamoDB・EFSなど複数サービスのバックアップを、統一されたスケジュールと保持ポリシーで管理し、さらに別リージョンへコピーしてDRに備えたい。最も適したサービスはどれか。</p>
+    <ul class="choices">
+      <li>A. 各サービスで個別にスクリプトを組み、cronで実行する</li>
+      <li>B. AWS Backup のバックアッププランで一元管理し、クロスリージョンコピーを設定する</li>
+      <li>C. S3バージョニングだけで対応する</li>
+      <li>D. EC2のAMIを手動で定期取得する</li>
+    </ul>
+    <details class="ans"><summary>解答と解説を見る</summary><div class="body">
+      <p><span class="badge">正解 B</span></p>
+      <p>AWS Backupは多数のAWSサービスのバックアップを<strong>一元的にポリシー管理</strong>し、スケジュール・保持期間・別リージョン/別アカウントへのコピーを宣言的に構成できます。個別スクリプト（A）は運用負荷と抜け漏れリスクが高い。S3バージョニング（C）はS3のみが対象。手動AMI取得（D）は網羅性も自動化も不足します。</p>
+    </div></details>
+  </div>
+</section>
+
+<footer class="pager">
+  <a href="domain1.html">← 第1章 セキュアなアーキテクチャの設計</a>
+  <a href="index.html">目次へ →</a>
+</footer>
+
+</div>
+</body>
+</html>
